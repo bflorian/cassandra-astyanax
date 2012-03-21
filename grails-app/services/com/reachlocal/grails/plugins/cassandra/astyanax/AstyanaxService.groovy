@@ -104,8 +104,7 @@ class AstyanaxService
 			execute(keyspace) {ks ->
 				out.println "${cf}:"
 				ks.prepareQuery(new ColumnFamily(cf, StringSerializer.get(), StringSerializer.get()))
-						.getAllRows()
-						.setRowLimit(maxRows)
+						.getKeyRange(null,null,'0','0',maxRows)
 						.withColumnRange(new RangeBuilder().setMaxSize(maxColumns).build())
 						.execute()
 						.result.each{row ->
