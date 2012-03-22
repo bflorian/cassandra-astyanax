@@ -77,6 +77,14 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 				.result
 	}
 
+	def getColumn(Object client, Object columnFamily, Object rowKey, Object columnName)
+	{
+		client.prepareQuery(columnFamily).getKey(rowKey)
+				.getColumn(columnName)
+				.execute()
+				.result
+	}
+
 	def prepareMutationBatch(client)
 	{
 		client.prepareMutationBatch()

@@ -37,8 +37,8 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 		}
 
 		astyanaxService.execute() {keyspace ->
-			def row = mapping.getRow(keyspace, columnFamily, key)
-			assertEquals("Test User 1", mapping.stringValue(mapping.getColumn(row, "name")))
+			def col = mapping.getColumn(keyspace, columnFamily, key, "name")
+			assertEquals "Test User 1", mapping.stringValue(col)
 		}
 	}
 
