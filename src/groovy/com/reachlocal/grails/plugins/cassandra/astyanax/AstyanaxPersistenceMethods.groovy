@@ -31,23 +31,23 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 		new ColumnFamily(name.toString(), StringSerializer.get(), StringSerializer.get())
 	}
 
-	Iterable getRow(Object client, Object columnFamily, Object rowKey)
+	def getRow(Object client, Object columnFamily, Object rowKey)
 	{
 		def cols = client.prepareQuery(columnFamily).getKey(rowKey).execute().result
 		cols.isEmpty() ? null : cols
 	}
 
-	Iterable getRows(Object client, Object columnFamily, Collection rowKeys)
+	def getRows(Object client, Object columnFamily, Collection rowKeys)
 	{
-		client.prepareQuery(columnFamily).getKeySlice(rowKeys).execute().result*.columns
+		client.prepareQuery(columnFamily).getKeySlice(rowKeys).execute().result
 	}
 
-	Iterable getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames)
+	def getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames)
 	{
 		client.prepareQuery(columnFamily).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result*.columns
 	}
 
-	Iterable getRowsWithEqualityIndex(client, columnFamily, properties, max)
+	def getRowsWithEqualityIndex(client, columnFamily, properties, max)
 	{
 		def exp = properties.collect {name, value ->
 			columnFamily.newIndexClause().whereColumn(name).equals().value(value)
@@ -61,7 +61,7 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 				.result*.column
 	}
 
-	Iterable getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max)
+	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max)
 	{
 		client.prepareQuery(columnFamily).getKey(rowKey)
 				.withColumnRange(start, finish, reversed, max)
@@ -69,7 +69,7 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 				.result
 	}
 
-	Iterable getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames)
+	def getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames)
 	{
 		client.prepareQuery(columnFamily).getKey(rowKey)
 				.withColumnSlice(columnNames)
@@ -77,8 +77,6 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 				.result
 	}
 
-
-	// Write operations
 	def prepareMutationBatch(client)
 	{
 		client.prepareMutationBatch()
@@ -109,7 +107,11 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 		mutationBatch.execute()
 	}
 
-	// Column data values
+	def getRow(rows, key)
+	{
+		rows.getRow(key).columns
+	}
+
 	def getColumn(row, name)
 	{
 		row.getColumnByName(name)

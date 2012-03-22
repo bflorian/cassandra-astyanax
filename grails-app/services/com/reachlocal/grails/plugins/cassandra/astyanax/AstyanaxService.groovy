@@ -54,7 +54,7 @@ class AstyanaxService
 	 * @param block closure to be executed
 	 * @throws Exception
 	 */
-	void execute(keyspace=defaultKeyspace, block) throws Exception
+	def execute(keyspace=defaultKeyspace, block) throws Exception
 	{
 		def context = new AstyanaxContext.Builder()
 				.forCluster(cluster)

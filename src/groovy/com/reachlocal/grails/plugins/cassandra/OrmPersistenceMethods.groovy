@@ -26,17 +26,17 @@ interface OrmPersistenceMethods
 {
 	def columnFamily(String name);
 
-	Iterable getRow(Object client, Object columnFamily, Object rowKey);
+	def getRow(Object client, Object columnFamily, Object rowKey);
 
-	Iterable getRows(Object client, Object columnFamily, Collection rowKeys);
+	def getRows(Object client, Object columnFamily, Collection rowKeys);
 
-	Iterable getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames);
+	def getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames);
 
-	Iterable getRowsWithEqualityIndex(client, columnFamily, properties, max);
+	def getRowsWithEqualityIndex(client, columnFamily, properties, max);
 
-	Iterable getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max);
+	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max);
 
-	Iterable getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames);
+	def getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames);
 
 	def prepareMutationBatch(client);
 
@@ -49,6 +49,8 @@ interface OrmPersistenceMethods
 	void deleteRow(mutationBatch, columnFamily, rowKey);
 
 	def execute(mutationBatch);
+
+	def getRow(rows, key);
 
 	def getColumn(row, name);
 
