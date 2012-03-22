@@ -34,3 +34,4 @@ grails.project.dependency.resolution = {
 		runtime 'com.github.stephenc.eaio-uuid:uuid:3.2.0'
     }
 }
+

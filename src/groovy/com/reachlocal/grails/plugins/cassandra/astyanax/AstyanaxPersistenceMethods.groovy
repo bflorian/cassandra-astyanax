@@ -18,12 +18,11 @@ package com.reachlocal.grails.plugins.cassandra.astyanax
 
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
-import com.reachlocal.grails.plugins.cassandra.OrmPersistenceMethods
 
 /**
  * @author: Bob Florian
  */
-class AstyanaxPersistenceMethods implements OrmPersistenceMethods
+class AstyanaxPersistenceMethods
 {
 	// Read operations
 	def columnFamily(String name)

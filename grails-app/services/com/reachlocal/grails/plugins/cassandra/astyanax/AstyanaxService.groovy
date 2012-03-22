@@ -25,9 +25,7 @@ import com.netflix.astyanax.AstyanaxContext
 import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.util.RangeBuilder
-
 import groovy.sql.Sql
-import com.reachlocal.grails.plugins.cassandra.OrmPersistenceMethods
 
 /**
  * @author Bob Florian
@@ -124,5 +122,5 @@ class AstyanaxService
 	/**
 	 * Provides persistence methods for cassandra-orm plugin
 	 */
-	OrmPersistenceMethods orm = new AstyanaxPersistenceMethods()
+	def orm = new AstyanaxPersistenceMethods()
 }
