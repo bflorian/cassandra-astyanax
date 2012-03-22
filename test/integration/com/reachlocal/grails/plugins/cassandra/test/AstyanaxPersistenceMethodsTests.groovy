@@ -24,17 +24,30 @@ import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxPersistenceMetho
 class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 {
 	def astyanaxService
-	
-	def mapping = new AstyanaxPersistenceMethods()
 	def prefix = UUID.randomUUID()
-	def columnFamily = mapping.columnFamily("User")
-	
-	void testPutAndGetRow()
+
+	void testPutAndGetColumn()
 	{
-		def key = rowKey("testPutAndGetRow")
+		def key = rowKey("testPutAndGetColumn")
 		
 		astyanaxService.execute() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)			
+			mapping.putColumn(m, columnFamily, key, "name", "Test User 1")
+			mapping.execute(m)
+		}
+
+		astyanaxService.execute() {keyspace ->
+			def row = mapping.getRow(keyspace, columnFamily, key)
+			assertEquals("Test User 1", mapping.stringValue(mapping.getColumn(row, "name")))
+		}
+	}
+
+	void testPutAndGetRow()
+	{
+		def key = rowKey("testPutAndGetRow")
+
+		astyanaxService.execute() {keyspace ->
+			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 1"])
 			mapping.execute(m)
 		}
@@ -211,5 +224,15 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	private rowKey(name)
 	{
 		"${prefix}-${name}".toString()
+	}
+
+	private getMapping()
+	{
+		astyanaxService.orm
+	}
+
+	private getColumnFamily()
+	{
+		mapping.columnFamily("User")
 	}
 }

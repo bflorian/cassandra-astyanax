@@ -89,6 +89,11 @@ class AstyanaxPersistenceMethods implements OrmPersistenceMethods
 		mutationBatch.withRow(columnFamily, rowKey).deleteColumn(columnName)
 	}
 
+	void putColumn(mutationBatch, columnFamily, rowKey, name, value)
+	{
+		mutationBatch.withRow(columnFamily, rowKey).putColumn(name, value)
+	}
+
 	void putColumns(mutationBatch, columnFamily, rowKey, columnMap)
 	{
 		mutationBatch.withRow(columnFamily, rowKey).putColumns(columnMap)

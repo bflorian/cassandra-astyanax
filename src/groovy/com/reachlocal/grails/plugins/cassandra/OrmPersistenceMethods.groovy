@@ -42,6 +42,8 @@ interface OrmPersistenceMethods
 
 	void deleteColumn(mutationBatch, columnFamily, rowKey, columnName);
 
+	void putColumn(mutationBatch, columnFamily, rowKey, name, value);
+
 	void putColumns(mutationBatch, columnFamily, rowKey, columnMap);
 
 	void deleteRow(mutationBatch, columnFamily, rowKey);

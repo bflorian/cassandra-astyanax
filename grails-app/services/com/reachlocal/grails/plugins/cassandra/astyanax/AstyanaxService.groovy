@@ -27,6 +27,7 @@ import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.util.RangeBuilder
 
 import groovy.sql.Sql
+import com.reachlocal.grails.plugins.cassandra.OrmPersistenceMethods
 
 /**
  * @author Bob Florian
@@ -34,6 +35,8 @@ import groovy.sql.Sql
  */
 class AstyanaxService
 {
+	boolean transactional = false
+
 	def port = ConfigurationHolder.config?.cassandra?.port ?: 9160
 	def host = ConfigurationHolder.config?.cassandra?.host ?: "127.0.0.1"
 	def seeds = ConfigurationHolder.config?.cassandra?.seeds ?: "${host}:${port}"
@@ -44,7 +47,6 @@ class AstyanaxService
 	def defaultKeyspace = ConfigurationHolder.config?.cassandra?.keySpace ?: "AstyanaxTest"
 
 	def cqlDriver = "org.apache.cassandra.cql.jdbc.CassandraDriver"
-
 	/**
 	 * Constructs an Astyanax context and passed execution to a closure
 	 *
@@ -118,4 +120,9 @@ class AstyanaxService
 			}
 		}
 	}
+
+	/**
+	 * Provides persistence methods for cassandra-orm plugin
+	 */
+	OrmPersistenceMethods orm = new AstyanaxPersistenceMethods()
 }
