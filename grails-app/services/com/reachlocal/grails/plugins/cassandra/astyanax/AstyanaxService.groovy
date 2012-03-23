@@ -26,17 +26,18 @@ import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.util.RangeBuilder
 import groovy.sql.Sql
+import org.springframework.beans.factory.InitializingBean
 
 /**
  * @author Bob Florian
  *
  */
-class AstyanaxService
+class AstyanaxService implements InitializingBean
 {
 	boolean transactional = false
 
 	def port = ConfigurationHolder.config?.cassandra?.port ?: 9160
-	def host = ConfigurationHolder.config?.cassandra?.host ?: "127.0.0.1"
+	def host = ConfigurationHolder.config?.cassandra?.host ?: "localhost"
 	def seeds = ConfigurationHolder.config?.cassandra?.seeds ?: "${host}:${port}"
 	def maxConsPerHost = ConfigurationHolder.config?.cassandra?.maxConsPerHost ?: 10
 	def cluster = ConfigurationHolder.config?.cassandra?.cluster ?: "Test Cluster"
@@ -45,6 +46,17 @@ class AstyanaxService
 	def defaultKeyspace = ConfigurationHolder.config?.cassandra?.keySpace ?: "AstyanaxTest"
 
 	def cqlDriver = "org.apache.cassandra.cql.jdbc.CassandraDriver"
+	def connectionPoolConfiguration
+	def connectionPoolMonitor
+
+	void afterPropertiesSet ()
+	{
+		connectionPoolConfiguration = new ConnectionPoolConfigurationImpl(connectionPoolName)
+				.setPort(port)
+				.setMaxConnsPerHost(maxConsPerHost)
+				.setSeeds(seeds)
+	}
+
 	/**
 	 * Constructs an Astyanax context and passed execution to a closure
 	 *
@@ -54,28 +66,7 @@ class AstyanaxService
 	 */
 	def execute(keyspace=defaultKeyspace, block) throws Exception
 	{
-		def context = new AstyanaxContext.Builder()
-				.forCluster(cluster)
-				.forKeyspace(keyspace)
-				.withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-				.setDiscoveryType(discoveryType)
-		)
-				.withConnectionPoolConfiguration(new ConnectionPoolConfigurationImpl(connectionPoolName)
-				.setPort(port)
-				.setMaxConnsPerHost(maxConsPerHost)
-				.setSeeds(seeds)
-		)
-				.withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
-				.buildKeyspace(ThriftFamilyFactory.getInstance());
-
-		context.start()
-
-		try {
-			block(context.entity)
-		}
-		finally {
-			context.shutdown()
-		}
+		block(context(keyspace).entity)
 	}
 
 	/**
@@ -123,4 +114,33 @@ class AstyanaxService
 	 * Provides persistence methods for cassandra-orm plugin
 	 */
 	def orm = new AstyanaxPersistenceMethods()
+	
+	def context(keyspace)
+	{
+		def context = contextMap[keyspace]
+		if (!context) {
+			context = newContext(keyspace)
+			context.start()
+		}
+		return context
+	}
+	
+	private synchronized newContext(keyspace)
+	{
+		def context = contextMap[keyspace]
+		if (!context) {
+			context = new AstyanaxContext.Builder()
+					.forCluster(cluster)
+					.forKeyspace(keyspace)
+					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl().setDiscoveryType(discoveryType))
+					.withConnectionPoolConfiguration(connectionPoolConfiguration)
+					.withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
+					.buildKeyspace(ThriftFamilyFactory.getInstance());
+	
+			contextMap[keyspace] = context
+		}
+		return context
+	}
+	
+	private contextMap = [:]
 }

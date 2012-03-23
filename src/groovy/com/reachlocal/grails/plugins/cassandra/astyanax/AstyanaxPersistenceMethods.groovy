@@ -57,7 +57,7 @@ class AstyanaxPersistenceMethods
 				.setRowLimit(max)
 				.addPreparedExpressions(exp)
 				.execute()
-				.result*.column
+				.result
 	}
 
 	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max)
