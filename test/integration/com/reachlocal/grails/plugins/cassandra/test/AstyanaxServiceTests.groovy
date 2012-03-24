@@ -28,7 +28,7 @@ class AstyanaxServiceTests extends GroovyTestCase
 
 	void testRoundTrip()
 	{
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
 			def m = keyspace.prepareMutationBatch()
 			def cols = [id: UUID.randomUUID().toString(), email: "jdoe@localhost.com", name: "John Doe", city: "Olney", state: "MD"]

@@ -30,13 +30,13 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndGetColumn")
 		
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)			
 			mapping.putColumn(m, columnFamily, key, "name", "Test User 1")
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def col = mapping.getColumn(keyspace, columnFamily, key, "name")
 			assertEquals "Test User 1", mapping.stringValue(col)
 		}
@@ -46,13 +46,13 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndGetRow")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 1"])
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def row = mapping.getRow(keyspace, columnFamily, key)
 			assertEquals("Test User 1", mapping.stringValue(mapping.getColumn(row, "name")))
 		}
@@ -62,7 +62,7 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndGetRows")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			for (i in 1..5) {
 				mapping.putColumns(m, columnFamily, "${key}-${i}".toString(), [name: "Test User ${i}".toString()])
@@ -70,7 +70,7 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def keys = ["$key-1".toString(),"$key-3".toString(),"$key-5".toString()]
 			def rows = mapping.getRows(keyspace, columnFamily, keys)
 			assertEquals 3, rows.size()
@@ -85,7 +85,7 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndGetRowsColumnSlice")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			for (i in 1..5) {
 				mapping.putColumns(m, columnFamily, "${key}-${i}".toString(), [
@@ -100,7 +100,7 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def keys = ["$key-1".toString(),"$key-3".toString()]
 			def rows = mapping.getRowsColumnSlice(keyspace, columnFamily, keys, ["name","x5"])
 			assertEquals 2, rows.size()
@@ -118,13 +118,13 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndGetColumnRange")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 2", x1:"one", x2:"two", x3:"three", x4:"four", x5:"five"])
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def range = mapping.getColumnRange(keyspace, columnFamily, key, null, null, false, 10)
 			assertEquals 6, range.size()
 
@@ -145,13 +145,13 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndGetColumnSlice")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 2", x1:"one", x2:"two", x3:"three", x4:"four", x5:"five"])
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def slice = mapping.getColumnSlice(keyspace, columnFamily, key, ["name","x5"])
 			assertEquals 2, slice.size()
 			assertEquals "five", mapping.stringValue(slice.getColumnByIndex(1))
@@ -166,19 +166,19 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndDeleteColumn")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 1", x1:"one", x2:"two", x3:"three", x4:"four", x5:"five"])
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.deleteColumn(m, columnFamily, key, "x2")
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def row = mapping.getRow(keyspace, columnFamily, key)
 			assertEquals "Test User 1", mapping.stringValue(mapping.getColumn(row, "name"))
 			assertEquals "four", mapping.stringValue(mapping.getColumn(row, "x4"))
@@ -190,19 +190,19 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testPutAndDeleteRow")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 1", x1:"one", x2:"two", x3:"three", x4:"four", x5:"five"])
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.deleteRow(m, columnFamily, key)
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def row = mapping.getRow(keyspace, columnFamily, key)
 			assertNull row
 		}
@@ -212,13 +212,13 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	{
 		def key = rowKey("testByteArrayValue")
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace)
 			mapping.putColumns(m, columnFamily, key, [name: "Test User 1"])
 			mapping.execute(m)
 		}
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def row = mapping.getRow(keyspace, columnFamily, key)
 			assertEquals("Test User 1".bytes, mapping.byteArrayValue(mapping.getColumn(row, "name")))
 		}

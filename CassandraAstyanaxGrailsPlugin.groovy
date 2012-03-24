@@ -31,11 +31,13 @@ class CassandraAstyanaxGrailsPlugin
 	]
 
 	// TODO Fill in these fields
-	def author = "Your name"
+	def author = "Bob Florian"
 	def authorEmail = ""
-	def title = "Plugin summary/headline"
+	def title = "Astyanax Cassandra Client"
 	def description = '''\\
-Brief description of the plugin.
+This plugin exposes the Astyanax Cassandra client as a Grails service and adds dynamic methods to make using it from
+Groovy more convenient.  In also include a Cassandra Query Language (CQL) JDBC driver and service method for constructing
+a groovy.sql.Sql facade from it.
 '''
 
 	// URL to the plugin's documentation

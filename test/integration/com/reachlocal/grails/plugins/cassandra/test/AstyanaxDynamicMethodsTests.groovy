@@ -30,7 +30,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = keyspace.prepareColumnMutation("User", key, "name")
 			m.putValue("Joe Smith", null).execute()
 
@@ -44,7 +44,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
 			def m = keyspace.prepareMutationBatch()
 			def cols = [name: "Jane Doe", city: "Olney", state: "MD"]
@@ -61,7 +61,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = keyspace.prepareMutationBatch()
 			def cols = [name: "John Doe", city: "Olney", state: "MD"]
 			m.withRow("User", key).putColumns(cols)
@@ -78,7 +78,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = keyspace.prepareColumnMutation(new ColumnFamily("User", StringSerializer.get(), StringSerializer.get()), key, "name")
 			m.putValue("Joe Smith").execute()
 
@@ -92,7 +92,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
 			def m = keyspace.prepareMutationBatch()
 			m.withRow(cf, key).putColumn("name","Jane Doe",null).putColumn("city","Olney",null).putColumn("state","MD",null)
@@ -108,7 +108,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
 			def m = keyspace.prepareMutationBatch()
 			m.withRow(cf, key).putColumn("name","Jane Doe")
@@ -123,7 +123,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key =  UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
 			def m = keyspace.prepareMutationBatch()
 			def cols = [name: "Jane Doe", city: "Olney", state: "MD"]
@@ -142,7 +142,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 	{
 		def key = UUID.randomUUID().toString()
 
-		astyanaxService.execute() {keyspace ->
+		astyanaxService.withKeyspace() {keyspace ->
 			def m = keyspace.prepareColumnMutation(new ColumnFamily("User", StringSerializer.get(), StringSerializer.get()), key, "name")
 			m.putValue("Sally Smith", null).execute()
 

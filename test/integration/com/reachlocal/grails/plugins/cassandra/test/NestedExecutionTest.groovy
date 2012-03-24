@@ -25,16 +25,16 @@ class NestedExecutionTest extends GroovyTestCase
 
 	void testTandem()
 	{
-		astyanaxService.execute() {ks1 ->
+		astyanaxService.withKeyspace() {ks1 ->
 		}
-		astyanaxService.execute() {ks2 ->
+		astyanaxService.withKeyspace() {ks2 ->
 		}
 	}
 
 	void testTwoLevel()
 	{
-		astyanaxService.execute() {ks1 ->
-			astyanaxService.execute() {ks2 ->
+		astyanaxService.withKeyspace() {ks1 ->
+			astyanaxService.withKeyspace() {ks2 ->
 
 			}
 		}
@@ -43,14 +43,14 @@ class NestedExecutionTest extends GroovyTestCase
 	void testTwoThreads()
 	{
 		Thread.start {
-			astyanaxService.execute() {ks1 ->
+			astyanaxService.withKeyspace() {ks1 ->
 				println "thread 1"
 				Thread.sleep(100)
 				println "thread 1 ending"
 			}
 		}
 		Thread.start {
-			astyanaxService.execute() {ks2 ->
+			astyanaxService.withKeyspace() {ks2 ->
 				println "thread 2"
 				Thread.sleep(100)
 				println "thread 2 ending"

@@ -58,13 +58,24 @@ class AstyanaxService implements InitializingBean
 	}
 
 	/**
+	 * Returns a keyspace entity
+	 *
+	 * @param name
+	 * @return
+	 */
+	def keyspace(name=defaultKeyspace)
+	{
+		context(name).entity
+	}
+
+	/**
 	 * Constructs an Astyanax context and passed execution to a closure
 	 *
 	 * @param keyspace name of the keyspace
 	 * @param block closure to be executed
 	 * @throws Exception
 	 */
-	def execute(keyspace=defaultKeyspace, block) throws Exception
+	def withKeyspace(keyspace=defaultKeyspace, block) throws Exception
 	{
 		block(context(keyspace).entity)
 	}
@@ -92,7 +103,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	void showColumnFamilies (Collection names, String keyspace=defaultKeyspace, Integer maxRows=50, Integer maxColumns=10, out=System.out) {
 		names.each {String cf ->
-			execute(keyspace) {ks ->
+			withKeyspace(keyspace) {ks ->
 				out.println "${cf}:"
 				ks.prepareQuery(new ColumnFamily(cf, StringSerializer.get(), StringSerializer.get()))
 						.getKeyRange(null,null,'0','0',maxRows)
