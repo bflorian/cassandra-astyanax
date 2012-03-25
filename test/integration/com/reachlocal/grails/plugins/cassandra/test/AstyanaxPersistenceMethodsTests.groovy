@@ -81,6 +81,62 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 		}
 	}
 
+	void testPutAndGetRowsWithEqualityIndex()
+	{
+		def key = rowKey("testPutAndGetRowsWithEqualityIndex")
+		def state = UUID.randomUUID().toString()
+		
+		astyanaxService.withKeyspace() {keyspace ->
+			def m = mapping.prepareMutationBatch(keyspace)
+			for (j in 1..3) {
+				for (i in 1..(2*j)) {
+					mapping.putColumns(m, columnFamily, "${key}-${i}-${j}".toString(), [
+							name: "Test User ${i}".toString(), 
+							city: "City ${j}".toString(),
+							state: state
+					])
+				}
+			}
+			mapping.execute(m)
+		}
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def rows = mapping.getRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 1", state:  state], 100)
+			assertEquals 2, rows.size()
+
+			rows = mapping.getRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 3", state:  state], 100)
+			assertEquals 6, rows.size()
+		}
+	}
+
+	void testPutAndCountRowsWithEqualityIndex()
+	{
+		def key = rowKey("testPutAndCountRowsWithEqualityIndex")
+		def state = UUID.randomUUID().toString()
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def m = mapping.prepareMutationBatch(keyspace)
+			for (j in 1..3) {
+				for (i in 1..(2*j)) {
+					mapping.putColumns(m, columnFamily, "${key}-${i}-${j}".toString(), [
+							name: "Test User ${i}".toString(),
+							city: "City ${j}".toString(),
+							state: state
+					])
+				}
+			}
+			mapping.execute(m)
+		}
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def count = mapping.countRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 1", state:  state], 100)
+			assertEquals 2, count
+
+			count = mapping.countRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 2", state:  state], 100)
+			assertEquals 4, count
+		}
+	}
+
 	void testPutAndGetRowsColumnSlice()
 	{
 		def key = rowKey("testPutAndGetRowsColumnSlice")

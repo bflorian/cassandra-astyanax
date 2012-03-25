@@ -60,6 +60,22 @@ class AstyanaxPersistenceMethods
 				.result
 	}
 
+	def countRowsWithEqualityIndex(client, columnFamily, properties, max)
+	{
+		def clause = properties.collect {name, value -> "${name} = '${value}'"}.join(" AND ")
+		def query = "SELECT COUNT(*) FROM ${columnFamily.name} WHERE ${clause}"
+
+		client.prepareQuery(columnFamily)
+				.withCql(query)
+				.execute()
+				.result
+				.rows
+				.getRowByIndex(0)
+				.columns
+				.getColumnByIndex(0)
+				.longValue
+	}
+	
 	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max)
 	{
 		client.prepareQuery(columnFamily).getKey(rowKey)
