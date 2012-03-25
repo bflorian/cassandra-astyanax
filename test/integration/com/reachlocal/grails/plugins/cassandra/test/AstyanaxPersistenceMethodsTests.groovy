@@ -129,10 +129,10 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 		}
 
 		astyanaxService.withKeyspace() {keyspace ->
-			def count = mapping.countRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 1", state:  state], 100)
+			def count = mapping.countRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 1", state:  state])
 			assertEquals 2, count
 
-			count = mapping.countRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 2", state:  state], 100)
+			count = mapping.countRowsWithEqualityIndex(keyspace, columnFamily, [city: "City 2", state:  state])
 			assertEquals 4, count
 		}
 	}

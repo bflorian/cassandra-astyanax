@@ -60,7 +60,7 @@ class AstyanaxPersistenceMethods
 				.result
 	}
 
-	def countRowsWithEqualityIndex(client, columnFamily, properties, max)
+	def countRowsWithEqualityIndex(client, columnFamily, properties)
 	{
 		def clause = properties.collect {name, value -> "${name} = '${value}'"}.join(" AND ")
 		def query = "SELECT COUNT(*) FROM ${columnFamily.name} WHERE ${clause}"
