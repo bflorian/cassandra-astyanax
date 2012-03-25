@@ -43,7 +43,7 @@ class AstyanaxPersistenceMethods
 
 	def getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames)
 	{
-		client.prepareQuery(columnFamily).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result*.columns
+		client.prepareQuery(columnFamily).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
 	}
 
 	def getRowsWithEqualityIndex(client, columnFamily, properties, max)

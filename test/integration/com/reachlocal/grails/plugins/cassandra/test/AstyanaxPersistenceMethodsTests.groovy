@@ -160,10 +160,10 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 			def keys = ["$key-1".toString(),"$key-3".toString()]
 			def rows = mapping.getRowsColumnSlice(keyspace, columnFamily, keys, ["name","x5"])
 			assertEquals 2, rows.size()
-			assertNotNull rows.find{mapping.stringValue(mapping.getColumn(it, "name")) == "Test User 3"}
-			assertNull rows.find{mapping.stringValue(mapping.getColumn(it, "name")) == "Test User 2"}
+			assertNotNull rows*.columns.find{mapping.stringValue(mapping.getColumn(it, "name")) == "Test User 3"}
+			assertNull rows*.columns.find{mapping.stringValue(mapping.getColumn(it, "name")) == "Test User 2"}
 			
-			def row = rows.find{mapping.stringValue(mapping.getColumn(it, "name")) == "Test User 1"}
+			def row = rows*.columns.find{mapping.stringValue(mapping.getColumn(it, "name")) == "Test User 1"}
 			assertNotNull row
 			assertEquals "five-1", row.x5.stringValue
 			assertNull row.x1
