@@ -5,7 +5,7 @@ use AstyanaxTest;
 create column family User
     with comparator=UTF8Type
     and column_metadata=[
-        {column_name: city, validation_class: UTF8Type},
+        {column_name: id, validation_class: UTF8Type},
         {column_name: city, validation_class: UTF8Type, index_type: KEYS},
         {column_name: state, validation_class: UTF8Type, index_type: KEYS},
         {column_name: zip, validation_class: UTF8Type, index_type: KEYS},

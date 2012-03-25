@@ -18,6 +18,7 @@ package com.reachlocal.grails.plugins.cassandra.test
 
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
+import com.reachlocal.grails.plugins.cassandra.test.util.TestSchema
 
 /**
  * @author: Bob Florian
@@ -25,6 +26,11 @@ import com.netflix.astyanax.serializers.StringSerializer
 class AstyanaxServiceTests extends GroovyTestCase
 {
 	def astyanaxService
+
+	protected void setUp() {
+		TestSchema.initialize(astyanaxService)
+		super.setUp()
+	}
 
 	void testRoundTrip()
 	{

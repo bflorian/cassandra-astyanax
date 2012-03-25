@@ -19,7 +19,7 @@ package com.reachlocal.grails.plugins.cassandra.test
 /**
  * @author: Bob Florian
  */
-class UuidDynamicMethodsTests extends GroovyTestCase 
+class UuidDynamicMethodsTests extends GroovyTestCase
 {
 	void testInteger_getBytes()
 	{
