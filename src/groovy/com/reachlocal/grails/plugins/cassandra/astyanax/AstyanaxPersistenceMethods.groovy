@@ -68,6 +68,17 @@ class AstyanaxPersistenceMethods
 				.result
 	}
 
+	def countColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish)
+	{
+		def row = client.prepareQuery(columnFamily).getKey(rowKey)
+		if (start || finish) {
+			row = row.withColumnRange(start, finish, false, Integer.MAX_VALUE)
+		}
+		row.getCount()
+				.execute()
+				.result
+	}
+
 	def getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames)
 	{
 		client.prepareQuery(columnFamily).getKey(rowKey)

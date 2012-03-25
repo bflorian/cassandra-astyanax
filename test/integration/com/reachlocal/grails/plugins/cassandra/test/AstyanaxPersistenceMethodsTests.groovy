@@ -141,6 +141,28 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 		}
 	}
 
+	def testPutAndCountColumnRange()
+	{
+		def key = rowKey("testPutAndCountColumnRange")
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def m = mapping.prepareMutationBatch(keyspace)
+			mapping.putColumns(m, columnFamily, key, [name: "Test User 2", x1:"one", x2:"two", x3:"three", x4:"four", x5:"five"])
+			mapping.execute(m)
+		}
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def count = mapping.countColumnRange(keyspace, columnFamily, key, null, null)
+			assertEquals 6, count
+
+			count = mapping.countColumnRange(keyspace, columnFamily, key, "x1", "x4")
+			assertEquals 4, count
+
+			count = mapping.countColumnRange(keyspace, columnFamily, key, "x3", "x4")
+			assertEquals 2, count
+		}
+	}
+
 	def testPutAndGetColumnSlice()
 	{
 		def key = rowKey("testPutAndGetColumnSlice")
