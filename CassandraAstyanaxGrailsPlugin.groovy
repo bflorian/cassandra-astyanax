@@ -1,5 +1,4 @@
 import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxDynamicMethods
-import com.reachlocal.grails.plugins.cassandra.uuid.UuidDynamicMethods
 
 /*
  * Copyright 2012 ReachLocal Inc.
@@ -54,7 +53,6 @@ a groovy.sql.Sql facade from it.
 	def doWithDynamicMethods = { ctx ->
 		// Dynamic methods to make Astyanax groovier
 		AstyanaxDynamicMethods.addAll()
-		UuidDynamicMethods.addAll()
 	}
 
 	def doWithApplicationContext = { applicationContext ->
