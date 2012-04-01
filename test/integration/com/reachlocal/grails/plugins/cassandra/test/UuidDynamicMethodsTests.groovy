@@ -16,6 +16,8 @@
 
 package com.reachlocal.grails.plugins.cassandra.test
 
+import org.apache.commons.codec.binary.Base64
+
 /**
  * @author: Bob Florian
  */
@@ -83,5 +85,15 @@ class UuidDynamicMethodsTests extends GroovyTestCase
 	{
 		def bytes = UUID.randomUUID().bytes
 		assertEquals 16, bytes.size()
+	}
+
+	void testUUID_toUrlSafeString()
+	{
+		def uuid = UUID.randomUUID()
+		def string = uuid.toUrlSafeString()
+		def bytes = Base64.decodeBase64(string)
+		def u2 = UUID.fromBytes(bytes)
+		println string
+		assertEquals uuid, u2
 	}
 }

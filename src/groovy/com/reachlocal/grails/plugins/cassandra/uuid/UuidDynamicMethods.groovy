@@ -16,6 +16,8 @@
 
 package com.reachlocal.grails.plugins.cassandra.uuid
 
+import org.apache.commons.codec.binary.Base64
+
 /**
  * @author: Bob Florian
  */
@@ -76,6 +78,10 @@ class UuidDynamicMethods
 			}
 
 			return buffer;
+		}
+
+		UUID.metaClass.toUrlSafeString = {
+			Base64.encodeBase64URLSafeString(delegate.bytes)
 		}
 	}
 }
