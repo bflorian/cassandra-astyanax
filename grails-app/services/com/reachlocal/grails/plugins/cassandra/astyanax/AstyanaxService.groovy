@@ -47,7 +47,6 @@ class AstyanaxService implements InitializingBean
 
 	def cqlDriver = "org.apache.cassandra.cql.jdbc.CassandraDriver"
 	def connectionPoolConfiguration
-	def connectionPoolMonitor
 
 	void afterPropertiesSet ()
 	{
