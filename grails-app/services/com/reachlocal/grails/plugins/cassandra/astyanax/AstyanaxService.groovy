@@ -112,7 +112,12 @@ class AstyanaxService implements InitializingBean
 
 					out.println "    ${row.key} =>"
 					row.columns.each {col ->
-						out.println "        ${col.name} => '${col.stringValue}'"
+						try {
+							out.println "        ${col.name} => '${col.stringValue}'"
+						}
+						catch (Exception ex) {
+							out.println "        ${col.name} => ${col.longValue}"
+						}
 					}
 				}
 				out.println""
