@@ -67,6 +67,16 @@ class AstyanaxDynamicMethods
 			}
 		}
 
+		ThriftColumnFamilyMutationImpl.metaClass.incrementCounterColumn = {name, value=1 ->
+			delegate.incrementCounterColumn(name, value)
+		}
+
+		ThriftColumnFamilyMutationImpl.metaClass.incrementCounterColumns = {Map columns ->
+			columns.each {key, value ->
+				delegate.incrementCounterColumn(key, value ?: 1)
+			}
+		}
+
 		ThriftColumnOrSuperColumnListImpl.metaClass.get = {String name ->
 			delegate.getColumnByName(name)
 		}

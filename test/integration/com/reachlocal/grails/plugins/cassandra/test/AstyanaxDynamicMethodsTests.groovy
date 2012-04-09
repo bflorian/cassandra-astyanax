@@ -138,6 +138,57 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	void testThriftColumnFamilyMutationImpl_incrementCounterColumn()
+	{
+		def key =  UUID.randomUUID().toString()
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def cf = new ColumnFamily("User_CTR", StringSerializer.get(), StringSerializer.get())
+			def m = keyspace.prepareMutationBatch()
+			m.withRow(cf, key).incrementCounterColumn("colors")
+			m.withRow(cf, key).incrementCounterColumn("flavors", 3)
+			m.execute()
+
+			def u = keyspace.prepareQuery("User_CTR").getKey(key).execute().result
+			assertEquals(1, u.getColumnByName("colors").longValue)
+			assertEquals(3, u.getColumnByName("flavors").longValue)
+
+			m = keyspace.prepareMutationBatch()
+			m.withRow(cf, key).incrementCounterColumn("colors", 2)
+			m.withRow(cf, key).incrementCounterColumn("flavors")
+			m.execute()
+
+			u = keyspace.prepareQuery("User_CTR").getKey(key).execute().result
+			assertEquals(3, u.getColumnByName("colors").longValue)
+			assertEquals(4, u.getColumnByName("flavors").longValue)
+		}
+	}
+
+	void testThriftColumnFamilyMutationImpl_incrementCounterColumns()
+	{
+		def key =  UUID.randomUUID().toString()
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def cf = new ColumnFamily("User_CTR", StringSerializer.get(), StringSerializer.get())
+			def m = keyspace.prepareMutationBatch()
+			def cols = [colors: 1, flavors: 5]
+			m.withRow(cf, key).incrementCounterColumns(cols)
+			m.execute()
+
+			def u = keyspace.prepareQuery(cf).getKey(key).execute().result
+			assertEquals(1, u.getColumnByName("colors").longValue)
+			assertEquals(5, u.getColumnByName("flavors").longValue)
+
+			cols = [colors: 2, flavors: 6]
+			m.withRow(cf, key).incrementCounterColumns(cols)
+			m.execute()
+
+			u = keyspace.prepareQuery(cf).getKey(key).execute().result
+			assertEquals(3, u.getColumnByName("colors").longValue)
+			assertEquals(11, u.getColumnByName("flavors").longValue)
+		}
+	}
+
 	void testThriftColumnOrSuperColumnListImpl_get()
 	{
 		def key = UUID.randomUUID().toString()

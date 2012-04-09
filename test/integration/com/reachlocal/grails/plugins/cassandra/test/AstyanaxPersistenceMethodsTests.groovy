@@ -302,6 +302,43 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 		}
 	}
 
+	void testIncrementAndGetColumn()
+	{
+		def key = rowKey("testIncrementAndGetColumn")
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def m = mapping.prepareMutationBatch(keyspace)
+			mapping.incrementCounterColumn(m, counterColumnFamily, key, "places")
+			mapping.incrementCounterColumn(m, counterColumnFamily, key, "books", 3)
+			mapping.execute(m)
+		}
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def col1 = mapping.getColumn(keyspace, counterColumnFamily, key, "places")
+			assertEquals 1, mapping.longValue(col1)
+			def col2 = mapping.getColumn(keyspace, counterColumnFamily, key, "books")
+			assertEquals 3, mapping.longValue(col2)
+		}
+	}
+
+	void testIncrementAndGetColumns()
+	{
+		def key = rowKey("testIncrementAndGetColumns")
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def m = mapping.prepareMutationBatch(keyspace)
+			mapping.incrementCounterColumns(m, counterColumnFamily, key, [places:2, books:5])
+			mapping.execute(m)
+		}
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def col1 = mapping.getColumn(keyspace, counterColumnFamily, key, "places")
+			assertEquals 2, mapping.longValue(col1)
+			def col2 = mapping.getColumn(keyspace, counterColumnFamily, key, "books")
+			assertEquals 5, mapping.longValue(col2)
+		}
+	}
+
 	private rowKey(name)
 	{
 		"${prefix}-${name}".toString()
@@ -315,5 +352,10 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 	private getColumnFamily()
 	{
 		mapping.columnFamily("User")
+	}
+
+	private getCounterColumnFamily()
+	{
+		mapping.columnFamily("User_CTR")
 	}
 }

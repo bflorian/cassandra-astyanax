@@ -131,6 +131,16 @@ class AstyanaxPersistenceMethods
 		mutationBatch.withRow(columnFamily, rowKey).putColumns(columnMap)
 	}
 
+	void incrementCounterColumn(mutationBatch, columnFamily, rowKey, columnName, value=1)
+	{
+		mutationBatch.withRow(columnFamily, rowKey).incrementCounterColumn(columnName, value)
+	}
+
+	void incrementCounterColumns(mutationBatch, columnFamily, rowKey, columnMap)
+	{
+		mutationBatch.withRow(columnFamily, rowKey).incrementCounterColumns(columnMap)
+	}
+
 	void deleteRow(mutationBatch, columnFamily, rowKey)
 	{
 		mutationBatch.deleteRow([columnFamily], rowKey)
@@ -164,5 +174,10 @@ class AstyanaxPersistenceMethods
 	byte[] byteArrayValue(column)
 	{
 		column.byteArrayValue
+	}
+
+	def longValue(column)
+	{
+		column.longValue
 	}
 }

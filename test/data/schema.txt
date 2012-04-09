@@ -11,3 +11,7 @@ create column family User
         {column_name: zip, validation_class: UTF8Type, index_type: KEYS},
         {column_name: e164phone, validation_class: UTF8Type, index_type: KEYS}
     ];
+
+create column family User_CTR
+    with comparator = UTF8Type
+    and default_validation_class = CounterColumnType;
