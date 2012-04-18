@@ -46,6 +46,14 @@ class AstyanaxPersistenceMethods
 		client.prepareQuery(columnFamily).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
 	}
 
+	def getRowsColumnRange(Object client, Object columnFamily, Collection rowKeys, Object start, Object finish, Boolean reversed, Integer max)
+	{
+		client.prepareQuery(columnFamily).getKeySlice(rowKeys)
+				.withColumnRange(start, finish, reversed, max)
+				.execute()
+				.result
+	}
+
 	def getRowsWithEqualityIndex(client, columnFamily, properties, max)
 	{
 		def exp = properties.collect {name, value ->
@@ -154,6 +162,11 @@ class AstyanaxPersistenceMethods
 	def getRow(rows, key)
 	{
 		rows.getRow(key).columns
+	}
+
+	def getRowKey(row)
+	{
+		row.key
 	}
 
 	def getColumn(row, name)
