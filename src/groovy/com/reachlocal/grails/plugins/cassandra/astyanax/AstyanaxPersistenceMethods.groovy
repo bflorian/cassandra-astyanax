@@ -179,6 +179,11 @@ class AstyanaxPersistenceMethods
 		row.getColumnByName(name)
 	}
 
+	def getColumnByIndex(row, index)
+	{
+		row.getColumnByIndex(index)
+	}
+
 	def name(column)
 	{
 		column.name
