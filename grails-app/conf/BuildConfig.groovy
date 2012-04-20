@@ -35,3 +35,12 @@ grails.project.dependency.resolution = {
     }
 }
 
+grails.project.repos.beanstalkRepository.url = "https://mural.svn.beanstalkapp.com/grails-plugins"
+grails.project.repos.beanstalkRepository.type = "svn"
+
+grails.project.repos.dreamhostRepository.url = "http://cm.florian.org/grailsplugins"
+grails.project.repos.dreamhostRepository.type = "svn"
+
+grails.project.repos.default = "dreamhostRepository"
+grails.release.scm.enabled = false
+
