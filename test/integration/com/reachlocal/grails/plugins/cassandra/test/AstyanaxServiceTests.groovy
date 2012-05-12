@@ -66,8 +66,8 @@ class AstyanaxServiceTests extends GroovyTestCase
 
 	void testShowColumnFamilies()
 	{
-		astyanaxService.showColumnFamilies(["User"])
-		astyanaxService.showColumnFamilies(["User"], astyanaxService.defaultKeyspace, 10, 3, System.err)
+		astyanaxService.showColumnFamilies(["User"], astyanaxService.defaultKeyspace)
+		astyanaxService.showColumnFamilies(["User"], astyanaxService.defaultKeyspace, astyanaxService.defaultCluster, 10, 3, System.err)
 	}
 
 }

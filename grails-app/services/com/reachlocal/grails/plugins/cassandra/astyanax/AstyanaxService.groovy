@@ -36,6 +36,8 @@ class AstyanaxService implements InitializingBean
 {
 	boolean transactional = false
 
+	def clusters = ConfigurationHolder.config.astyanax.clusters
+	/*
 	def port = ConfigurationHolder.config?.cassandra?.port ?: 9160
 	def host = ConfigurationHolder.config?.cassandra?.host ?: "localhost"
 	def seeds = ConfigurationHolder.config?.cassandra?.seeds ?: "${host}:${port}"
@@ -43,17 +45,25 @@ class AstyanaxService implements InitializingBean
 	def cluster = ConfigurationHolder.config?.cassandra?.cluster ?: "Test Cluster"
 	def connectionPoolName = ConfigurationHolder.config?.cassandra?.connectionPoolName ?: "MyConnectionPool"
 	def discoveryType = ConfigurationHolder.config?.cassandra?.discoveryType ?: com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
-	def defaultKeyspace = ConfigurationHolder.config?.cassandra?.keySpace ?: "AstyanaxTest"
+     */
 
-	def cqlDriver = "org.apache.cassandra.cql.jdbc.CassandraDriver"
-	def connectionPoolConfiguration
+	String defaultCluster = ConfigurationHolder.config?.astyanax?.defaultCluster ?: "standard"
+	String defaultKeyspace = ConfigurationHolder.config?.astyanax?.defaultKeySpace ?: "AstyanaxTest"
+	String cqlDriver = "org.apache.cassandra.cql.jdbc.CassandraDriver"
 
+	private clusterMap = [:]
 	void afterPropertiesSet ()
 	{
-		connectionPoolConfiguration = new ConnectionPoolConfigurationImpl(connectionPoolName)
-				.setPort(port)
-				.setMaxConnsPerHost(maxConsPerHost)
-				.setSeeds(seeds)
+		clusters.each {key, props ->
+			clusterMap[key] = [
+					connectionPoolConfiguration:  new ConnectionPoolConfigurationImpl(props.connectionPoolName)
+							.setPort(props.port)
+							.setMaxConnsPerHost(props.maxConsPerHost)
+							.setSeeds(props.seeds),
+
+					contexts: [:]
+			]
+		}
 	}
 
 	/**
@@ -62,7 +72,7 @@ class AstyanaxService implements InitializingBean
 	 * @param name
 	 * @return
 	 */
-	def keyspace(name=defaultKeyspace)
+	def keyspace(String name=defaultKeyspace, String cluster=defaultCluster)
 	{
 		context(name).entity
 	}
@@ -74,7 +84,7 @@ class AstyanaxService implements InitializingBean
 	 * @param block closure to be executed
 	 * @throws Exception
 	 */
-	def withKeyspace(keyspace=defaultKeyspace, block) throws Exception
+	def withKeyspace(String keyspace=defaultKeyspace, String cluster=defaultCluster, Closure block) throws Exception
 	{
 		block(context(keyspace).entity)
 	}
@@ -86,9 +96,10 @@ class AstyanaxService implements InitializingBean
 	 * @return initialized JDBC/CQL connection object
 	 * @throws Exception
 	 */
-	Sql cql(keyspace=defaultKeyspace) throws Exception
+	Sql cql(String keyspace=defaultKeyspace, String cluster=defaultCluster) throws Exception
 	{
-		Sql.newInstance("jdbc:cassandra://localhost:${port}/${keyspace}", cqlDriver)
+		def seed = clusters[cluster].seeds[0]
+		Sql.newInstance("jdbc:cassandra://${seed}/${keyspace}", cqlDriver)
 	}
 
 	/**
@@ -100,7 +111,7 @@ class AstyanaxService implements InitializingBean
 	 * @param maxColumns the maximum number of columns to print for each row
 	 * @param out the print writer to use, defaults to System.out
 	 */
-	void showColumnFamilies (Collection names, String keyspace=defaultKeyspace, Integer maxRows=50, Integer maxColumns=10, out=System.out) {
+	void showColumnFamilies (Collection names, String keyspace, String cluster=defaultCluster, Integer maxRows=50, Integer maxColumns=10, out=System.out) {
 		names.each {String cf ->
 			withKeyspace(keyspace) {ks ->
 				out.println "${cf}:"
@@ -130,32 +141,32 @@ class AstyanaxService implements InitializingBean
 	 */
 	def orm = new AstyanaxPersistenceMethods()
 	
-	def context(keyspace)
+	def context(keyspace, cluster="standard")
 	{
-		def context = contextMap[keyspace]
+		def context = clusterMap[cluster].contexts[keyspace]
 		if (!context) {
-			context = newContext(keyspace)
+			context = newContext(keyspace, cluster)
 			context.start()
 		}
 		return context
 	}
 	
-	private synchronized newContext(keyspace)
+	private synchronized newContext(keyspace, cluster)
 	{
-		def context = contextMap[keyspace]
+		def entry = clusterMap[cluster]
+		def context = entry.contexts[keyspace]
 		if (!context) {
+			def props = clusters[cluster]
 			context = new AstyanaxContext.Builder()
 					.forCluster(cluster)
 					.forKeyspace(keyspace)
-					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl().setDiscoveryType(discoveryType))
-					.withConnectionPoolConfiguration(connectionPoolConfiguration)
+					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl().setDiscoveryType(props.discoveryType))
+					.withConnectionPoolConfiguration(entry.connectionPoolConfiguration)
 					.withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
 					.buildKeyspace(ThriftFamilyFactory.getInstance());
-	
-			contextMap[keyspace] = context
+
+			entry.contexts[keyspace] = context
 		}
 		return context
 	}
-	
-	private contextMap = [:]
 }

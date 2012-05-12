@@ -1,5 +1,19 @@
 // configuration for plugin testing - will not be included in the plugin zip
- 
+
+astyanax {
+	clusters {
+		standard {
+			name = "Test Cluster"
+			seeds = ["localhost:9160"]
+			port = 9160
+			maxConsPerHost = 10
+			connectionPoolName = "MyConnectionPool"
+			discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
+			keySpace = "AstyanaxTest"
+		}
+	}
+}
+
 log4j = {
     // Example of changing the log pattern for the default console
     // appender:

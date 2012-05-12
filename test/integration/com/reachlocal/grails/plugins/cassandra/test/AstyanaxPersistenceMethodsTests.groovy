@@ -17,6 +17,7 @@
 package com.reachlocal.grails.plugins.cassandra.test
 
 import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxPersistenceMethods
+import com.reachlocal.grails.plugins.cassandra.test.util.TestSchema
 
 /**
  * @author: Bob Florian
@@ -25,6 +26,11 @@ class AstyanaxPersistenceMethodsTests extends GroovyTestCase
 {
 	def astyanaxService
 	def prefix = UUID.randomUUID()
+
+	protected void setUp() {
+		TestSchema.initialize(astyanaxService)
+		super.setUp()
+	}
 
 	void testPutAndGetColumn()
 	{
