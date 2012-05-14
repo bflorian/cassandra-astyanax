@@ -27,6 +27,7 @@ import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.util.RangeBuilder
 import groovy.sql.Sql
 import org.springframework.beans.factory.InitializingBean
+import com.netflix.astyanax.retry.RetryNTimes
 
 /**
  * @author Bob Florian
@@ -160,7 +161,10 @@ class AstyanaxService implements InitializingBean
 			context = new AstyanaxContext.Builder()
 					.forCluster(cluster)
 					.forKeyspace(keyspace)
-					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl().setDiscoveryType(props.discoveryType))
+					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
+							.setDiscoveryType(props.discoveryType)
+							.setRetryPolicy(new RetryNTimes(3))
+					)
 					.withConnectionPoolConfiguration(entry.connectionPoolConfiguration)
 					.withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
 					.buildKeyspace(ThriftFamilyFactory.getInstance());
