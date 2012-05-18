@@ -6,4 +6,3 @@ CREATE INDEX zip_idx ON User(zip);
 CREATE INDEX e164phone_idx ON User(e164phone);
 DROP COLUMNFAMILY User_CTR;
 CREATE COLUMNFAMILY User_CTR (KEY varchar PRIMARY KEY) WITH default_validation = CounterColumnType;
-
