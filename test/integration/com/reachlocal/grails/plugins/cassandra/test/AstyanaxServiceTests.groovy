@@ -54,14 +54,10 @@ class AstyanaxServiceTests extends GroovyTestCase
 
 	void testCql()
 	{
-		def count = 0
-		def cql = astyanaxService.cql();
-		cql.eachRow("select * from User limit 10") {row ->
-			//println "${row.name}"
-			count++
-		}
-		
-		assertTrue count <= 10
+		def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
+		def result = astyanaxService.keyspace().prepareQuery(cf).withCql("select * from User limit 10;").execute().result
+
+		assertTrue result.rows.size() <= 10
 	}
 
 	void testShowColumnFamilies()

@@ -33,11 +33,9 @@ class TestSchema
 	
     static private createKeyspace(astyanaxService)
 	{
-		def cql = astyanaxService.cql()
-		
 		new File("test/data/schema.cql").eachLine {line ->
 			try {
-				cql.execute(line)
+				astyanaxService.keyspace().prepareQuery("").withCql(line).execute()
 			}
 			catch (Exception e) {
 				println "${line} -- ${e}"

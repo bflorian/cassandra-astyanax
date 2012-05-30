@@ -91,19 +91,6 @@ class AstyanaxService implements InitializingBean
 	}
 
 	/**
-	 * Initialized a CQL JDBC connection
-	 * 
-	 * @param keyspace name of the keyspace
-	 * @return initialized JDBC/CQL connection object
-	 * @throws Exception
-	 */
-	Sql cql(String keyspace=defaultKeyspace, String cluster=defaultCluster) throws Exception
-	{
-		def seed = clusters[cluster].seeds[0]
-		Sql.newInstance("jdbc:cassandra://${seed}/${keyspace}", cqlDriver)
-	}
-
-	/**
 	 * Utility method to print out readable version of column family for debugging purposes
 	 *
 	 * @param names list of column family names to display
