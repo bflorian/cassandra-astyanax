@@ -19,24 +19,25 @@ import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxDynamicMethods
 class CassandraAstyanaxGrailsPlugin
 {
 	// the plugin version
-	def version = "0.0.3"
+	def version = "0.0.4"
+
 	// the version or versions of Grails the plugin is designed for
 	def grailsVersion = "1.3.7 > *"
+
 	// the other plugins this plugin depends on
 	def dependsOn = [:]
+
 	// resources that are excluded from plugin packaging
 	def pluginExcludes = [
 			"grails-app/views/error.gsp"
 	]
 
-	// TODO Fill in these fields
 	def author = "Bob Florian"
-	def authorEmail = ""
+	def authorEmail = "bob.florian@reachlocal.com"
 	def title = "Astyanax Cassandra Client"
 	def description = '''\\
 This plugin exposes the Astyanax Cassandra client as a Grails service and adds dynamic methods to make using it from
-Groovy more convenient.  In also include a Cassandra Query Language (CQL) JDBC driver and service method for constructing
-a groovy.sql.Sql facade from it.
+Groovy more convenient.
 '''
 
 	// URL to the plugin's documentation
