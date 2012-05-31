@@ -33,7 +33,7 @@ grails.project.dependency.resolution = {
 		runtime 'com.google.guava:guava:11.0.2'
 		runtime 'com.github.stephenc.eaio-uuid:uuid:3.2.0'
 		compile ('com.netflix.astyanax:astyanax:1.0.3') {
-			excludes 'slf4j-log4j12'
+			excludes 'slf4j-log4j12', 'junit'
 		}
 
     }
