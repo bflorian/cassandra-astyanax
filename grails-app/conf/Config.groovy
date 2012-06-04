@@ -8,10 +8,13 @@ astyanax {
 			port = 9160
 			maxConsPerHost = 10
 			connectionPoolName = "MyConnectionPool"
+			connectionPoolMonitor = new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
 			discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
-			keySpace = "AstyanaxTest"
+			retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
+			defaultKeyspace = "AstyanaxTest"
 		}
 	}
+	defaultCluster = 'standard'
 }
 
 log4j = {

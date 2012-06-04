@@ -38,19 +38,8 @@ class AstyanaxService implements InitializingBean
 	boolean transactional = false
 
 	def clusters = ConfigurationHolder.config.astyanax.clusters
-	/*
-	def port = ConfigurationHolder.config?.cassandra?.port ?: 9160
-	def host = ConfigurationHolder.config?.cassandra?.host ?: "localhost"
-	def seeds = ConfigurationHolder.config?.cassandra?.seeds ?: "${host}:${port}"
-	def maxConsPerHost = ConfigurationHolder.config?.cassandra?.maxConsPerHost ?: 10
-	def cluster = ConfigurationHolder.config?.cassandra?.cluster ?: "Test Cluster"
-	def connectionPoolName = ConfigurationHolder.config?.cassandra?.connectionPoolName ?: "MyConnectionPool"
-	def discoveryType = ConfigurationHolder.config?.cassandra?.discoveryType ?: com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
-     */
-
 	String defaultCluster = ConfigurationHolder.config?.astyanax?.defaultCluster ?: "standard"
 	String defaultKeyspace = ConfigurationHolder.config?.astyanax?.defaultKeySpace ?: "AstyanaxTest"
-	String cqlDriver = "org.apache.cassandra.cql.jdbc.CassandraDriver"
 
 	private clusterMap = [:]
 	void afterPropertiesSet ()
@@ -75,7 +64,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	def keyspace(String name=defaultKeyspace, String cluster=defaultCluster)
 	{
-		context(name).entity
+		context(name, cluster).entity
 	}
 
 	/**
@@ -87,7 +76,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	def withKeyspace(String keyspace=defaultKeyspace, String cluster=defaultCluster, Closure block) throws Exception
 	{
-		block(context(keyspace).entity)
+		block(context(keyspace, cluster).entity)
 	}
 
 	/**
@@ -129,7 +118,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	def orm = new AstyanaxPersistenceMethods()
 	
-	def context(keyspace, cluster="standard")
+	def context(keyspace, cluster)
 	{
 		def context = clusterMap[cluster].contexts[keyspace]
 		if (!context) {
@@ -150,10 +139,10 @@ class AstyanaxService implements InitializingBean
 					.forKeyspace(keyspace)
 					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
 							.setDiscoveryType(props.discoveryType)
-							.setRetryPolicy(new RetryNTimes(3))
+							.setRetryPolicy(props.retryPolicy)
 					)
 					.withConnectionPoolConfiguration(entry.connectionPoolConfiguration)
-					.withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
+					.withConnectionPoolMonitor(props.connectionPoolMonitor)
 					.buildKeyspace(ThriftFamilyFactory.getInstance());
 
 			entry.contexts[keyspace] = context
