@@ -90,7 +90,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	void showColumnFamilies (Collection names, String keyspace, String cluster=defaultCluster, Integer maxRows=50, Integer maxColumns=10, out=System.out) {
 		names.each {String cf ->
-			withKeyspace(keyspace) {ks ->
+			withKeyspace(keyspace, cluster) {ks ->
 				out.println "${cf}:"
 				ks.prepareQuery(new ColumnFamily(cf, StringSerializer.get(), StringSerializer.get()))
 						.getKeyRange(null,null,'0','0',maxRows)
