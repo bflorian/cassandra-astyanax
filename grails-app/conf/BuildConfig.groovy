@@ -26,11 +26,7 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        // runtime 'mysql:mysql-connector-java:5.1.13'
-		//runtime 'joda-time:joda-time:2.0'
-		//runtime 'org.apache.servicemix.bundles:org.apache.servicemix.bundles.commons-csv:1.0-r706900_3'
 		runtime 'com.github.stephenc.high-scale-lib:high-scale-lib:1.1.1'
-		runtime 'com.google.guava:guava:11.0.2'
 		runtime 'com.github.stephenc.eaio-uuid:uuid:3.2.0'
 		compile ('com.netflix.astyanax:astyanax:1.0.3') {
 			excludes 'slf4j-log4j12', 'junit'
