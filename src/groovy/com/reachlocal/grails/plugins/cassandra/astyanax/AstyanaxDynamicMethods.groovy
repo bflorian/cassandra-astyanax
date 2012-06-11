@@ -57,6 +57,14 @@ class AstyanaxDynamicMethods
 			result
 		}
 
+		ThriftColumnOrSuperColumnListImpl.metaClass.toStringMap = {
+			def result = [:]
+			delegate.iterator().each {
+				result[it.name] = it.stringValue
+			}
+			result
+		}
+
 		ThriftColumnFamilyMutationImpl.metaClass.putColumn = {name, value ->
 			delegate.putColumn(name, value, null)
 		}

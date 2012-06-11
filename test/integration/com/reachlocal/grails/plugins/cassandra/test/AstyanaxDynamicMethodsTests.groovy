@@ -110,6 +110,22 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	void testThriftColumnOrSuperColumnListImpl_toStringMap()
+	{
+		def key =  UUID.randomUUID().toString()
+
+		astyanaxService.withKeyspace() {keyspace ->
+			def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
+			def m = keyspace.prepareMutationBatch()
+			m.withRow(cf, key).putColumn("name","Fred Smith",null).putColumn("city","Rockville",null).putColumn("state","MD",null)
+			m.execute()
+
+			def u = keyspace.prepareQuery("User").getKey(key).execute().result
+			def map = u.toStringMap()
+			assertEquals("Fred Smith", map.name)
+		}
+	}
+
 	void testThriftColumnFamilyMutationImpl_putColumn()
 	{
 		def key =  UUID.randomUUID().toString()
