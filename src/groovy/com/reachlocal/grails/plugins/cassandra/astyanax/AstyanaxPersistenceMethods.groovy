@@ -134,9 +134,22 @@ class AstyanaxPersistenceMethods
 		mutationBatch.withRow(columnFamily, rowKey).putColumn(name, value)
 	}
 
+	void putColumn(mutationBatch, columnFamily, rowKey, name, value, ttl)
+	{
+		mutationBatch.withRow(columnFamily, rowKey).putColumn(name, value, ttl)
+	}
+
 	void putColumns(mutationBatch, columnFamily, rowKey, columnMap)
 	{
 		mutationBatch.withRow(columnFamily, rowKey).putColumns(columnMap)
+	}
+
+	void putColumns(mutationBatch, columnFamily, rowKey, columnMap, ttlMap)
+	{
+		def r = mutationBatch.withRow(columnFamily, rowKey)
+		columnMap.each {k, v ->
+			r.putColumn(k, v, ttlMap[k])
+		}
 	}
 
 	void incrementCounterColumn(mutationBatch, columnFamily, rowKey, columnName, value=1)
