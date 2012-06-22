@@ -49,6 +49,42 @@ class AstyanaxDynamicMethods
 			delegate.putValue(value, null)
 		}
 
+		ThriftRowsListImpl.metaClass.toMap = {
+			def result = [:]
+			delegate.iterator().each {r ->
+				def cols = [:]
+				result[r.key] = cols
+				r.columns.each {c ->
+					cols[c.name] = c
+				}
+			}
+			result
+		}
+
+		ThriftRowsListImpl.metaClass.toStringMap = {
+			def result = [:]
+			delegate.iterator().each {r ->
+				def cols = [:]
+				result[r.key] = cols
+				r.columns.each {c ->
+					cols[c.name] = c.stringValue
+				}
+			}
+			result
+		}
+
+		ThriftRowsListImpl.metaClass.toLongMap = {
+			def result = [:]
+			delegate.iterator().each {r ->
+				def cols = [:]
+				result[r.key] = cols
+				r.columns.each {c ->
+					cols[c.name] = c.longValue
+				}
+			}
+			result
+		}
+
 		ThriftColumnOrSuperColumnListImpl.metaClass.toMap = {
 			def result = [:]
 			delegate.iterator().each {
@@ -61,6 +97,14 @@ class AstyanaxDynamicMethods
 			def result = [:]
 			delegate.iterator().each {
 				result[it.name] = it.stringValue
+			}
+			result
+		}
+
+		ThriftColumnOrSuperColumnListImpl.metaClass.toLongMap = {
+			def result = [:]
+			delegate.iterator().each {
+				result[it.name] = it.longValue
 			}
 			result
 		}
