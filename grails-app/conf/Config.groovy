@@ -1,11 +1,13 @@
+import com.netflix.astyanax.model.ColumnFamily
+import com.netflix.astyanax.serializers.StringSerializer
+import com.netflix.astyanax.serializers.LongSerializer
+
 // configuration for plugin testing - will not be included in the plugin zip
 
 astyanax {
 	clusters {
 		standard {
-			name = "Test Cluster"
 			seeds = ["localhost:9160"]
-			connectionPoolName = "MyConnectionPool"
 			defaultKeyspace = "AstyanaxTest"
 			//port = 9160
 			//maxConsPerHost = 10
@@ -13,6 +15,12 @@ astyanax {
 			//discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
 			// retryCount = 3
 			//retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
+			//connectionPoolName = "MyConnectionPool"
+			columnFamilies {
+				AstyanaxTest {
+					LongColumnCF = new ColumnFamily("LongColumnCF", StringSerializer.get(), LongSerializer.get())
+				}
+			}
 		}
 	}
 	defaultCluster = 'standard'

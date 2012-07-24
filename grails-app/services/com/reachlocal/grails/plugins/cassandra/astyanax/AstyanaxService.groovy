@@ -25,9 +25,9 @@ import com.netflix.astyanax.AstyanaxContext
 import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.util.RangeBuilder
-import groovy.sql.Sql
 import org.springframework.beans.factory.InitializingBean
 import com.netflix.astyanax.retry.RetryNTimes
+import com.netflix.astyanax.connectionpool.NodeDiscoveryType
 
 /**
  * @author Bob Florian
@@ -56,8 +56,9 @@ class AstyanaxService implements InitializingBean
 		clusters.each {key, props ->
 			def port = props.port ?: 9160
 			def maxConsPerHost = props.maxConsPerHost ?: 10
+			def connectionPoolName = props.connectionPoolName ?: key
 			clusterMap[key] = [
-					connectionPoolConfiguration:  new ConnectionPoolConfigurationImpl(props.connectionPoolName)
+					connectionPoolConfiguration:  new ConnectionPoolConfigurationImpl(connectionPoolName)
 							.setPort(port)
 							.setMaxConnsPerHost(maxConsPerHost)
 							.setSeeds(props.seeds),
@@ -151,10 +152,10 @@ class AstyanaxService implements InitializingBean
 		def context = entry.contexts[keyspace]
 		if (!context) {
 			def props = clusters[cluster]
-			def connectionPoolMonitor = props.connectionPoolMonitor ?: new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
-			def discoveryType = props.discoveryType ?:  com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
+			def connectionPoolMonitor = props.connectionPoolMonitor ?: new CountingConnectionPoolMonitor()
+			def discoveryType = props.discoveryType ?:  NodeDiscoveryType.NONE
 			def retryCount = props.retryCount ?: 3
-			def retryPolicy = props.retryPolicy ?: new com.netflix.astyanax.retry.RetryNTimes(retryCount)
+			def retryPolicy = props.retryPolicy ?: new RetryNTimes(retryCount)
 			context = new AstyanaxContext.Builder()
 					.forCluster(cluster)
 					.forKeyspace(keyspace)

@@ -1,0 +1,87 @@
+The Cassandra Astyanax plugin supports any number of Cassandra clusters, which may have different connection pool
+implementations and retry policies. To create a simple configuration with one cluster add the following to your
+project's Config.groovy file:
+
+{code}
+astyanax {
+    clusters {
+        standard {
+            seeds = ["localhost:9160"]
+            defaultKeyspace = "AstyanaxTest"
+        }
+    }
+    defaultCluster = 'standard'
+}
+{code}
+
+Calling Cassandra with the default cluster and keyspace (the "standard" cluster and "AstyanaxTest" keyspace in this case)
+would then look like:
+
+{code}
+astyanaxService.keyspace().prepareQuery("Standard1")
+        .getKey("some-row-key")
+        .execute()
+        .result
+{code}
+
+Alternately, you can pass the keyspace context to a closure, for example:
+
+{code}
+astyanaxService.withKeyspace {keyspace ->
+    keyspace.prepareQuery("Standard1")
+            .getKey("some-row-key")
+            .execute()
+            .result
+}
+{code}
+
+The above examples query the Standard1 column family using the StringSerializer for both the [row] key and column
+serializer (the plugin's default).  You can also specify different serializers:
+
+{code}
+astyanaxService.keyspace().prepareQuery(new ColumnFamily("Standard1", StringSerializer.get(), LongSerializer.get()))
+        .getKey("some-row-key")
+        .execute()
+        .result
+{code}
+
+You can also specify a different keyspace:
+
+{code}
+astyanaxService.keyspace("AstyanaxTest2").prepareQuery("Standard2")
+        .getKey("some-row-key")
+        .execute()
+        .result
+{code}
+
+To access a second cluster, add it to the config:
+
+{code}
+astyanax {
+    clusters {
+        standard {
+            seeds = ["localhost:9160"]
+            defaultKeyspace = "AstyanaxTest"
+        }
+        anotherCluster {
+            seeds = ["111.222.333.444:9160"]
+        }
+    }
+    defaultCluster = 'standard'
+}
+{code}
+
+You can then call the second cluster as follows:
+
+{code}
+astyanaxService.keyspace("TheKeyspace", "anotherCluster").prepareQuery("TestCF1")
+        .getKey("some-row-key")
+        .execute()
+        .result
+{code}
+
+
+
+
+
+

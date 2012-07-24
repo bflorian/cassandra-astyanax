@@ -1,0 +1,49 @@
+The Cassandra Astyanax plugin adds a number of methods to the standard Astyanax classes to make them more convenient
+to use from the Groovy language.
+
+h4. ColumnFamilyQuery Keyspace.prepareQuery(String columnFamily, rowKey, column)
+Prepares a column family query using the default row and column serializer.
+
+h4. ColumnListMutation MutationBatch.withRow(String columnFamily, rowKey)
+Prepares a column list mutation using the default row and column serializer.
+
+h4. Map<Object, Map<Object, Column>> Rows.toMap()
+Returns a two-level nested map where the row key is the key of the outer map, the column name is the key of the
+inner map, and the Column object is the value of the inner map.
+
+h4. Map<Object, Map<Object, String>> Rows.toStringMap()
+Returns a two-level nested map where the row key is the key of the outer map, the column name is the key of the
+inner map, and the Column stringValue is the value of the inner map.
+
+h4. Map<Object, Map<Object, Long>> Rows.toStringMap()
+Returns a two-level nested map where the row key is the key of the outer map, the column name is the key of the
+inner map, and the Column longValue is the value of the inner map.
+
+h4. Map<Object, Column> AbstractColumnList.toMap()
+Returns a map with the column name as the key and the Column object as the value
+
+h4. Map<Object, String> AbstractColumnList.toStringMap()
+Returns a map with the column name as the key and the Column stringValue as the value
+
+h4. Map<Object, Long> AbstractColumnList.toLongMap()
+Returns a map with the column name as the key and the Column longValue as the value
+
+h4. ColumnMutation Keyspace.prepareColumnMutation(String columnFamily, rowKey, column)
+Prepares a column mutation using the default row and column serializer.
+
+h4. Execution ColumnMutation.putValue(value)
+Adds the specified value to the column mutation with no time-to-live.
+
+h4. ColumnListMutation ColumnListMutation.putColumn(name, value)
+Adds a column with the specified name and value to the column mutation with no time-to-live.
+
+h4. ColumnListMutation ColumnListMutation.putColumns(Map map)
+Adds a column for each enry in the map, where the column name is the map key and the column value the map value,
+with no time-to-live.
+
+h4. ColumnListMutation ColumnListMutation.incrementCounterColumn(name, value = 1)
+Increments the value of a counter column by the specified value, or by 1 if the value isn't specified.
+
+h4. ColumnListMutation ColumnListMutation.incrementCounterColumn(Map map)
+Increments the value of a counter for each entry in the map, where the column name is the map key and the increment
+is the map value, or 1 if the map value is null.

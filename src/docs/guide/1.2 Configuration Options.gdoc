@@ -1,0 +1,34 @@
+The complete set of configuration options supported by the plugin (with their default values) are shown in the following
+configuration:
+
+{code}
+astyanax {
+    clusters {
+        standard {
+            seeds = ["localhost:9160"]
+            defaultKeyspace = "AstyanaxTest"
+            port = 9160
+            maxConsPerHost = 10
+            retryCount = 3
+            connectionPoolMonitor = new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
+            discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
+            retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
+            connectionPoolName = "MyConnectionPool"
+        }
+    }
+    defaultCluster = 'standard'
+}
+{code}
+
+{table}
+*Property* | *Required* | *Meaning*
+seeds | yes | Array of node strings of the form "host:port" that Astyanax will use in quering Cassandra
+defaultKeyspace | no | Name of the keyspace to use if one is not specified in the service call
+port | no | Port number used for communicating to Cassandra nodes.  Defaults to 9160.
+maxConsPerHost | no | The maximum number of connections to be created for any one node.  Defaults to 10.
+retryCount | no | The number of times Astyanax will retry a call before failing.  Has not effect if the retryPolicy property is set.  Defaults to 3.
+connectionPoolMonitor | no | The connection pool monitor implementation.  Defaults to new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor
+discoveryType | no | The method of discovering new nodes.  Defaults to NONE (no discovery).  Other values are RING_DESCRIBE, DISCOVERY_SERVICE, and TOKEN_AWARE
+retryPolicy | no | The retry policy to use.  Defaults to RetryNTimes.  Others values include RunOnce, ConstantBackoff, ExponentialBackoff, BoundedExponentialBackoff, and SleepingRetryPolicy
+connectionPoolName | no | Name used to identify the connection pool.  Defaults to the astyanax.clusters configuration key, i.e. "standard" in this example
+{table}
