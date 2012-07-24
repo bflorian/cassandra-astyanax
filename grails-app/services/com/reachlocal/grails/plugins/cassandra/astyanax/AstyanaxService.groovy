@@ -42,13 +42,24 @@ class AstyanaxService implements InitializingBean
 	String defaultKeyspace = ConfigurationHolder.config?.astyanax?.defaultKeySpace ?: "AstyanaxTest"
 
 	private clusterMap = [:]
+
+	/**
+	 * Provides persistence methods for cassandra-orm plugin
+	 */
+	def orm = new AstyanaxPersistenceMethods()
+
+	/**
+	 * Initializes all configured clusters
+	 */
 	void afterPropertiesSet ()
 	{
 		clusters.each {key, props ->
+			def port = props.port ?: 9160
+			def maxConsPerHost = props.maxConsPerHost ?: 10
 			clusterMap[key] = [
 					connectionPoolConfiguration:  new ConnectionPoolConfigurationImpl(props.connectionPoolName)
-							.setPort(props.port)
-							.setMaxConnsPerHost(props.maxConsPerHost)
+							.setPort(port)
+							.setMaxConnsPerHost(maxConsPerHost)
 							.setSeeds(props.seeds),
 
 					contexts: [:]
@@ -59,8 +70,9 @@ class AstyanaxService implements InitializingBean
 	/**
 	 * Returns a keyspace entity
 	 *
-	 * @param name
-	 * @return
+	 * @param name Optional, ame of the keyspace, defaults to configured defaultKeyspace
+	 * @param cluster Optional, name of the Cassandra cluster, defaults to configured defaultCluster
+	 *
 	 */
 	def keyspace(String name=defaultKeyspace, String cluster=defaultCluster)
 	{
@@ -70,9 +82,9 @@ class AstyanaxService implements InitializingBean
 	/**
 	 * Constructs an Astyanax context and passed execution to a closure
 	 *
-	 * @param keyspace name of the keyspace
-	 * @param block closure to be executed
-	 * @throws Exception
+	 * @param name Optional, ame of the keyspace, defaults to configured defaultKeyspace
+	 * @param cluster Optional, name of the Cassandra cluster, defaults to configured defaultCluster
+	 *
 	 */
 	def withKeyspace(String keyspace=defaultKeyspace, String cluster=defaultCluster, Closure block) throws Exception
 	{
@@ -114,10 +126,12 @@ class AstyanaxService implements InitializingBean
 	}
 
 	/**
-	 * Provides persistence methods for cassandra-orm plugin
+	 * Finds or creates an Astyanax context for the specified cluster and keyspace
+	 *
+	 * @param keyspace name of the keyspace
+	 * @param cluster name of the cluster
+	 *
 	 */
-	def orm = new AstyanaxPersistenceMethods()
-	
 	def context(keyspace, cluster)
 	{
 		def context = clusterMap[cluster].contexts[keyspace]
@@ -127,22 +141,29 @@ class AstyanaxService implements InitializingBean
 		}
 		return context
 	}
-	
+
+	/**
+	 * Constructs new context and stores it in the map
+	 */
 	private synchronized newContext(keyspace, cluster)
 	{
 		def entry = clusterMap[cluster]
 		def context = entry.contexts[keyspace]
 		if (!context) {
 			def props = clusters[cluster]
+			def connectionPoolMonitor = props.connectionPoolMonitor ?: new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
+			def discoveryType = props.discoveryType ?:  com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
+			def retryCount = props.retryCount ?: 3
+			def retryPolicy = props.retryPolicy ?: new com.netflix.astyanax.retry.RetryNTimes(retryCount)
 			context = new AstyanaxContext.Builder()
 					.forCluster(cluster)
 					.forKeyspace(keyspace)
 					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-							.setDiscoveryType(props.discoveryType)
-							.setRetryPolicy(props.retryPolicy)
+							.setDiscoveryType(discoveryType)
+							.setRetryPolicy(retryPolicy)
 					)
 					.withConnectionPoolConfiguration(entry.connectionPoolConfiguration)
-					.withConnectionPoolMonitor(props.connectionPoolMonitor)
+					.withConnectionPoolMonitor(connectionPoolMonitor)
 					.buildKeyspace(ThriftFamilyFactory.getInstance());
 
 			entry.contexts[keyspace] = context

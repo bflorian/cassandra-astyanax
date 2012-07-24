@@ -5,13 +5,14 @@ astyanax {
 		standard {
 			name = "Test Cluster"
 			seeds = ["localhost:9160"]
-			port = 9160
-			maxConsPerHost = 10
 			connectionPoolName = "MyConnectionPool"
-			connectionPoolMonitor = new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
-			discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
-			retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
 			defaultKeyspace = "AstyanaxTest"
+			//port = 9160
+			//maxConsPerHost = 10
+			//connectionPoolMonitor = new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
+			//discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
+			// retryCount = 3
+			//retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
 		}
 	}
 	defaultCluster = 'standard'
