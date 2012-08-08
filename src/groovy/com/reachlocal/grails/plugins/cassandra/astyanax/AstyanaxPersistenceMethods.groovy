@@ -147,8 +147,15 @@ class AstyanaxPersistenceMethods
 	void putColumns(mutationBatch, columnFamily, rowKey, columnMap, ttlMap)
 	{
 		def r = mutationBatch.withRow(columnFamily, rowKey)
-		columnMap.each {k, v ->
-			r.putColumn(k, v, ttlMap[k])
+		if (ttlMap instanceof Number) {
+			columnMap.each {k, v ->
+				r.putColumn(k, v, ttlMap)
+			}
+		}
+		else {
+			columnMap.each {k, v ->
+				r.putColumn(k, v, ttlMap[k])
+			}
 		}
 	}
 
