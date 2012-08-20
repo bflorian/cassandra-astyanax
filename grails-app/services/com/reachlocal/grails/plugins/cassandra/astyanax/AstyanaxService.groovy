@@ -151,18 +151,29 @@ class AstyanaxService implements InitializingBean
 		def entry = clusterMap[cluster]
 		def context = entry.contexts[keyspace]
 		if (!context) {
+
 			def props = clusters[cluster]
 			def connectionPoolMonitor = props.connectionPoolMonitor ?: new CountingConnectionPoolMonitor()
 			def discoveryType = props.discoveryType ?:  NodeDiscoveryType.NONE
 			def retryCount = props.retryCount ?: 3
 			def retryPolicy = props.retryPolicy ?: new RetryNTimes(retryCount)
+
+			def configuration = new AstyanaxConfigurationImpl()
+					.setDiscoveryType(discoveryType)
+					.setRetryPolicy(retryPolicy)
+
+			if (props.defaultWriteConsistencyLevel) {
+				configuration.setDefaultWriteConsistencyLevel(props.defaultWriteConsistencyLevel)
+			}
+
+			if (props.defaultReadConsistencyLevel) {
+				configuration.setDefaultReadConsistencyLevel(props.defaultReadConsistencyLevel)
+			}
+
 			context = new AstyanaxContext.Builder()
 					.forCluster(cluster)
 					.forKeyspace(keyspace)
-					.withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-							.setDiscoveryType(discoveryType)
-							.setRetryPolicy(retryPolicy)
-					)
+					.withAstyanaxConfiguration(configuration)
 					.withConnectionPoolConfiguration(entry.connectionPoolConfiguration)
 					.withConnectionPoolMonitor(connectionPoolMonitor)
 					.buildKeyspace(ThriftFamilyFactory.getInstance());
