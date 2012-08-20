@@ -19,19 +19,22 @@ package com.reachlocal.grails.plugins.cassandra.test
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
 import com.reachlocal.grails.plugins.cassandra.test.util.TestSchema
+import org.junit.Test
+import static org.junit.Assert.*
 
 /**
  * @author: Bob Florian
  */
-class AstyanaxServiceTests extends GroovyTestCase
+class AstyanaxServiceTests
 {
 	def astyanaxService
 
-	protected void setUp() {
+	public AstyanaxServiceTests()
+	{
 		TestSchema.initialize(astyanaxService)
-		super.setUp()
 	}
 
+	@Test
 	void testRoundTrip()
 	{
 		astyanaxService.withKeyspace() {keyspace ->
@@ -52,6 +55,7 @@ class AstyanaxServiceTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testCql()
 	{
 		def cf = new ColumnFamily("User", StringSerializer.get(), StringSerializer.get())
@@ -60,6 +64,7 @@ class AstyanaxServiceTests extends GroovyTestCase
 		assertTrue result.rows.size() <= 10
 	}
 
+	@Test
 	void testShowColumnFamilies()
 	{
 		astyanaxService.showColumnFamilies(["User"], astyanaxService.defaultKeyspace)

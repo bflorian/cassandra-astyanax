@@ -16,13 +16,17 @@
 
 package com.reachlocal.grails.plugins.cassandra.test
 
+import org.junit.Test
+import static org.junit.Assert.*
+
 /**
  * @author: Bob Florian
  */
-class NestedExecutionTest extends GroovyTestCase
+class NestedExecutionTest
 {
 	def astyanaxService
 
+	@Test
 	void testTandem()
 	{
 		astyanaxService.withKeyspace() {ks1 ->
@@ -31,6 +35,7 @@ class NestedExecutionTest extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testTwoLevel()
 	{
 		astyanaxService.withKeyspace() {ks1 ->
@@ -40,6 +45,7 @@ class NestedExecutionTest extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testTwoThreads()
 	{
 		Thread.start {

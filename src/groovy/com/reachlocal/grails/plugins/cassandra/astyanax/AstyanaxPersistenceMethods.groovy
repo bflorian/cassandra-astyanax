@@ -18,6 +18,8 @@ package com.reachlocal.grails.plugins.cassandra.astyanax
 
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
+import com.netflix.astyanax.query.ColumnFamilyQuery
+import com.netflix.astyanax.model.ConsistencyLevel
 
 /**
  * @author: Bob Florian
@@ -30,37 +32,37 @@ class AstyanaxPersistenceMethods
 		new ColumnFamily(name.toString(), StringSerializer.get(), StringSerializer.get())
 	}
 
-	def getRow(Object client, Object columnFamily, Object rowKey)
+	def getRow(Object client, Object columnFamily, Object rowKey, consistencyLevel)
 	{
-		def cols = client.prepareQuery(columnFamily).getKey(rowKey).execute().result
+		def cols = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey).execute().result
 		cols.isEmpty() ? null : cols
 	}
 
-	def getRows(Object client, Object columnFamily, Collection rowKeys)
+	def getRows(Object client, Object columnFamily, Collection rowKeys, consistencyLevel)
 	{
-		client.prepareQuery(columnFamily).getKeySlice(rowKeys).execute().result
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).execute().result
 	}
 
-	def getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames)
+	def getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames, consistencyLevel)
 	{
-		client.prepareQuery(columnFamily).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
 	}
 
-	def getRowsColumnRange(Object client, Object columnFamily, Collection rowKeys, Object start, Object finish, Boolean reversed, Integer max)
+	def getRowsColumnRange(Object client, Object columnFamily, Collection rowKeys, Object start, Object finish, Boolean reversed, Integer max, consistencyLevel)
 	{
-		client.prepareQuery(columnFamily).getKeySlice(rowKeys)
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys)
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
 	}
 
-	def getRowsWithEqualityIndex(client, columnFamily, properties, max)
+	def getRowsWithEqualityIndex(client, columnFamily, properties, max, consistencyLevel)
 	{
 		def exp = properties.collect {name, value ->
 			columnFamily.newIndexClause().whereColumn(name).equals().value(value)
 		}
 
-		client.prepareQuery(columnFamily)
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.searchWithIndex()
 				.setRowLimit(max)
 				.addPreparedExpressions(exp)
@@ -68,12 +70,12 @@ class AstyanaxPersistenceMethods
 				.result
 	}
 
-	def countRowsWithEqualityIndex(client, columnFamily, properties)
+	def countRowsWithEqualityIndex(client, columnFamily, properties, consistencyLevel)
 	{
 		def clause = properties.collect {name, value -> "${name} = '${value}'"}.join(" AND ")
 		def query = "SELECT COUNT(*) FROM ${columnFamily.name} WHERE ${clause}"
 
-		client.prepareQuery(columnFamily)
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.withCql(query)
 				.execute()
 				.result
@@ -84,17 +86,17 @@ class AstyanaxPersistenceMethods
 				.longValue
 	}
 	
-	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max)
+	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max, consistencyLevel)
 	{
-		client.prepareQuery(columnFamily).getKey(rowKey)
+		injectConsistencyLevel(client.prepareQuery(columnFamily).getKey(rowKey), consistencyLevel)
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
 	}
 
-	def countColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish)
+	def countColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, consistencyLevel)
 	{
-		def row = client.prepareQuery(columnFamily).getKey(rowKey)
+		def row = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 		if (start || finish) {
 			row = row.withColumnRange(start, finish, false, Integer.MAX_VALUE)
 		}
@@ -103,25 +105,38 @@ class AstyanaxPersistenceMethods
 				.result
 	}
 
-	def getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames)
+	def getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames, consistencyLevel)
 	{
-		client.prepareQuery(columnFamily).getKey(rowKey)
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 				.withColumnSlice(columnNames)
 				.execute()
 				.result
 	}
 
-	def getColumn(Object client, Object columnFamily, Object rowKey, Object columnName)
+	def getColumn(Object client, Object columnFamily, Object rowKey, Object columnName, consistencyLevel)
 	{
-		client.prepareQuery(columnFamily).getKey(rowKey)
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 				.getColumn(columnName)
 				.execute()
 				.result
 	}
 
-	def prepareMutationBatch(client)
+	def prepareMutationBatch(client, ConsistencyLevel consistencyLevel)
 	{
-		client.prepareMutationBatch()
+		def m = client.prepareMutationBatch()
+		if (consistencyLevel) {
+			m.setConsistencyLevel(consistencyLevel)
+		}
+		return m
+	}
+
+	def prepareMutationBatch(client, consistencyLevel)
+	{
+		def m = client.prepareMutationBatch()
+		if (consistencyLevel) {
+			m.setConsistencyLevel(ConsistencyLevel.valueOf(consistencyLevel))
+		}
+		return m
 	}
 
 	void deleteColumn(mutationBatch, columnFamily, rowKey, columnName)
@@ -222,5 +237,27 @@ class AstyanaxPersistenceMethods
 	def longValue(column)
 	{
 		column.longValue
+	}
+
+	private injectConsistencyLevel(query, ConsistencyLevel consistencyLevel)
+	{
+		if (consistencyLevel) {
+			query.setConsistencyLevel(consistencyLevel)
+		}
+		return query
+	}
+
+	private injectConsistencyLevel(query, String consistencyLevel)
+	{
+		if (consistencyLevel) {
+			def cl = ConsistencyLevel.valueOf(consistencyLevel)
+			if (cl) {
+				query.setConsistencyLevel(cl)
+			}
+			else {
+				throw new IllegalArgumentException("'${consistencyLevel}' is not a valid ConsistencyLevel, must be one of [CL_ONE, CL_QUORUM, CL_ALL, CL_ANY, CL_EACH_QUORUM, CL_LOCAL_QUORUM, CL_TWO, CL_THREE]")
+			}
+		}
+		return query
 	}
 }

@@ -34,6 +34,7 @@ class TestSchema
     static private createKeyspace(astyanaxService)
 	{
 		new File("test/data/schema.cql").eachLine {line ->
+			println line
 			try {
 				astyanaxService.keyspace().prepareQuery("").withCql(line).execute()
 			}

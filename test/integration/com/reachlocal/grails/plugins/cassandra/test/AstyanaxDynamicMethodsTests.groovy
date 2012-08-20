@@ -16,6 +16,8 @@
 
 package com.reachlocal.grails.plugins.cassandra.test
 
+import org.junit.Test
+import static org.junit.Assert.*
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
 import com.reachlocal.grails.plugins.cassandra.test.util.TestSchema
@@ -23,15 +25,16 @@ import com.reachlocal.grails.plugins.cassandra.test.util.TestSchema
 /**
  * @author: Bob Florian
  */
-class AstyanaxDynamicMethodsTests extends GroovyTestCase
+class AstyanaxDynamicMethodsTests
 {
 	def astyanaxService
 
-	protected void setUp() {
+	public AstyanaxDynamicMethodsTests()
+	{
 		TestSchema.initialize(astyanaxService)
-		super.setUp()
 	}
 
+	@Test
 	void testThriftKeyspaceImpl_prepareColumnMutation()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -46,6 +49,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftKeyspaceImpl_prepareQuery()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -63,6 +67,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testAbstractThriftMutationBatchImpl_withRow()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -80,6 +85,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testAbstractThriftColumnMutationImpl_putValue()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -94,6 +100,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnOrSuperColumnListImpl_toMap()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -110,6 +117,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnOrSuperColumnListImpl_toStringMap()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -126,6 +134,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnFamilyMutationImpl_putColumn()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -141,6 +150,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnFamilyMutationImpl_putColumns()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -160,6 +170,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnFamilyMutationImpl_incrementCounterColumn()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -186,6 +197,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnFamilyMutationImpl_incrementCounterColumns()
 	{
 		def key =  UUID.randomUUID().toString()
@@ -211,6 +223,7 @@ class AstyanaxDynamicMethodsTests extends GroovyTestCase
 		}
 	}
 
+	@Test
 	void testThriftColumnOrSuperColumnListImpl_get()
 	{
 		def key = UUID.randomUUID().toString()
