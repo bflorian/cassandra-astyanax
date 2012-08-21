@@ -22,7 +22,7 @@ class CassandraAstyanaxGrailsPlugin
 	def version = "0.0.13"
 
 	// the version or versions of Grails the plugin is designed for
-	def grailsVersion = "1.3.7 > *"
+	def grailsVersion = "2.0.0 > *"
 
 	// the other plugins this plugin depends on
 	def dependsOn = [:]
@@ -36,7 +36,8 @@ class CassandraAstyanaxGrailsPlugin
 	def authorEmail = "bob.florian@reachlocal.com"
 	def title = "Astyanax Cassandra Client"
 	def description = '''This plugin exposes the Astyanax Cassandra client as a Grails service and adds dynamic methods
-to make using it from Groovy more convenient.
+to make using it from Groovy more convenient.  It also implements the interface defined by the cassandra-orm plugin that
+provides GORM-like dynamic methods for storing Groovy objects and relationships in Cassandra.
 '''
 
 	// URL to the plugin's documentation

@@ -1,0 +1,36 @@
+h1. Counting the Number of Columns
+
+h2. In an Entire Row
+
+{code}
+def rowKey = "xxx-1"
+int result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .getCount()
+    .execute()
+    .result
+{code}
+
+h2. In a Slice of Columns
+
+{code}
+def rowKey = "xxx-1"
+int result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .withColumnRange(new RangeBuilder().setStart("ColumnName1").setEnd("ColumnNameX").setMaxSize(100).build())
+    .getCount()
+    .execute()
+    .result
+{code}
+
+h2. Alternate Slice of Columns
+
+{code}
+def rowKey = "xxx-1"
+int result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .withColumnRange("ColumnName1","ColumnNameN",false, 100)
+    .getCount()
+    .execute()
+    .result
+{code}

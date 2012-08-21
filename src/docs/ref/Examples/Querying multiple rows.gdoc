@@ -1,0 +1,68 @@
+h1. Querying Multiple Rows
+
+h2. Returning All Columns
+
+Returns [com.netflix.astyanax.model.RowsList<String>|http://netflix.github.com/astyanax/javadoc/com/netflix/astyanax/model/RowsList.html]
+
+{code}
+def rowKeys = ["xxx-1","xxx-2","xxx-3"]
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKeySlice(rowKeys)
+    .execute()
+    .result
+{code}
+
+h2. Returning Specific Columns
+
+Returns [com.netflix.astyanax.model.RowsList<String>|http://netflix.github.com/astyanax/javadoc/com/netflix/astyanax/model/RowsList.html]
+
+{code}
+def rowKeys = ["xxx-1","xxx-2","xxx-3"]
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKeySlice(rowKeys)
+    .withColumnSlice(["ColumnName1","ColumnName2"])
+    .execute()
+    .result
+{code}
+
+h2. Return a Nested Map of Columns
+
+Returns Map<String,Map<String, [com.netflix.astyanax.model.Column<String>|http://netflix.github.com/astyanax/javadoc/com/netflix/astyanax/model/Column.html]>>
+
+{code}
+def rowKeys = ["xxx-1","xxx-2","xxx-3"]
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKeySlice(rowKeys)
+    .execute()
+    .result
+    .toMap()
+{code}
+
+h2. Return a Nested Map of Strings
+
+Returns Map<String,Map<String, String>>
+
+{code}
+def rowKeys = ["xxx-1","xxx-2","xxx-3"]
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKeySlice(rowKeys)
+    .execute()
+    .result
+    .toStringMap()
+{code}
+
+h2. Return a Map of Longs
+
+Returns Map<String,Map<String, Long>>
+
+{code}
+def rowKeys = ["xxx-1","xxx-2","xxx-3"]
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKeySlice(rowKeys)
+    .execute()
+    .result
+    .toLongMap()
+{code}
+
+
+

@@ -1,0 +1,22 @@
+h1. Deleting Data
+
+h2. Specific Columns
+
+{code}
+def rowKey = "xxx-1"
+def m = astyanaxService.keyspace().prepareMutationBatch()
+def result = m.withRow("Standard1", rowKey)
+    .deleteColumn("ColumnName1")
+    .deleteColumn("ColumnName2")
+    .execute()
+{code}
+
+h2. Entire Row
+
+{code}
+def rowKey = "xxx-1"
+def m = astyanaxService.keyspace().prepareMutationBatch()
+def result = m.withRow("Standard1", rowKey)
+    .delete()
+    .execute()
+{code}

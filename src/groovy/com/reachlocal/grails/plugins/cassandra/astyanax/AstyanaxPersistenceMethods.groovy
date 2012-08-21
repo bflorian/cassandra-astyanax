@@ -18,7 +18,6 @@ package com.reachlocal.grails.plugins.cassandra.astyanax
 
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
-import com.netflix.astyanax.query.ColumnFamilyQuery
 import com.netflix.astyanax.model.ConsistencyLevel
 
 /**

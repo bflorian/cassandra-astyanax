@@ -14,6 +14,8 @@ astyanax {
             discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
             retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
             connectionPoolName = "MyConnectionPool"
+            defaultReadConsistencyLevel = "CL_ONE"
+            defaultWriteConsistencyLevel = "CL_ONE"
         }
     }
     defaultCluster = 'standard'
@@ -31,4 +33,6 @@ connectionPoolMonitor | no | The connection pool monitor implementation.  Defaul
 discoveryType | no | The method of discovering new nodes.  Defaults to NONE (no discovery).  Other values are RING_DESCRIBE, DISCOVERY_SERVICE, and TOKEN_AWARE
 retryPolicy | no | The retry policy to use.  Defaults to RetryNTimes.  Others values include RunOnce, ConstantBackoff, ExponentialBackoff, BoundedExponentialBackoff, and SleepingRetryPolicy
 connectionPoolName | no | Name used to identify the connection pool.  Defaults to the astyanax.clusters configuration key, i.e. "standard" in this example
+defaultReadConsistencyLevel | no | Default consistency level used when reading from the cluster. This value can be overwritten on the Query operations.
+defaultWriteConsistencyLevel | no | Default consistency level used when reading from the cluster. This value can be overwritten on MutationBatch operation
 {table}

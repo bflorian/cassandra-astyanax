@@ -1,3 +1,0 @@
-The Cassandra Astyanax Plugin simplified integration of the Netflix developed [Astyanax Cassandra client|https://github.com/Netflix/astyanax/wiki]
-into a Grails application.  In addition to encapsulating the client into a Grails service the plugin adds several dynamic methods that make using
-the client from the Groovy language more convenient.

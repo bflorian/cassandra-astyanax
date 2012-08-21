@@ -44,6 +44,6 @@ with no time-to-live.
 h4. ColumnListMutation ColumnListMutation.incrementCounterColumn(name, value = 1)
 Increments the value of a counter column by the specified value, or by 1 if the value isn't specified.
 
-h4. ColumnListMutation ColumnListMutation.incrementCounterColumn(Map map)
+h4. ColumnListMutation ColumnListMutation.incrementCounterColumns(Map map)
 Increments the value of a counter for each entry in the map, where the column name is the map key and the increment
 is the map value, or 1 if the map value is null.

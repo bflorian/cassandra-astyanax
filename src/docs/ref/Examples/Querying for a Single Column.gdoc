@@ -1,0 +1,15 @@
+h1. Querying for a Single Column
+
+h2. Standard Astyanax
+
+Returns [com.netflix.astyanax.model.Column|http://netflix.github.com/astyanax/javadoc/com/netflix/astyanax/model/Column.html]
+
+{code}
+def rowKey = "xxx-1"
+Column<String> result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .getColumn("ColumnName1")
+    .execute()
+    .result
+String value = result.stringValue
+{code}
