@@ -1,0 +1,59 @@
+h1. Querying for Specific Columns
+
+h2. Standard Astyanax
+
+Returns [com.netflix.astyanax.model.ColumnList<String>|http://netflix.github.com/astyanax/javadoc/com/netflix/astyanax/model/ColumnList.html]
+
+{code}
+def rowKey = "xxx-1"
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .withColumnSlice("ColumnName1","ColumnName3","ColumnName5")
+    .execute()
+    .result
+{code}
+
+h2. Return a Map of Columns
+
+Returns java.util.Map<String, [com.netflix.astyanax.model.Column<String>|http://netflix.github.com/astyanax/javadoc/com/netflix/astyanax/model/Column.html]>
+
+{code}
+def rowKey = "xxx-1"
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .withColumnSlice("ColumnName1","ColumnName3","ColumnName5")
+    .execute()
+    .result
+    .toMap()
+{code}
+
+h2. Return a Map of Strings
+
+Returns java.util.Map<String, String>
+
+{code}
+def rowKey = "xxx-1"
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .withColumnSlice("ColumnName1","ColumnName3","ColumnName5")
+    .execute()
+    .result
+    .toStringMap()
+{code}
+
+h2. Return a Map of Longs
+
+Returns java.util.Map<String, Long>
+
+{code}
+def rowKey = "xxx-1"
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
+    .getKey(rowKey)
+    .withColumnSlice("ColumnName1","ColumnName3","ColumnName5")
+    .execute()
+    .result
+    .toLongMap()
+{code}
+
+
+

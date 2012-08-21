@@ -1,0 +1,45 @@
+h1. Incrementing Counter Columns
+
+h2. Single Column
+
+{code}
+def rowKey = "xxx-1"
+astyanaxService.keyspace().prepareColumnMutation("Counter1", "xxx-1", "ColumnName1")
+    .incrementCounterColumn(1)
+    .execute();
+{code}
+
+h2. Multiple Columns
+
+{code}
+def rowKey = "xxx-1"
+def m = astyanaxService.keyspace().prepareMutationBatch()
+m.withRow("Counter1", rowKey)
+    .incrementCounterColumn("ColumnName2", 1)
+    .incrementCounterColumn("ColumnName3", 1)
+m.execute();
+{code}
+
+h2. Omitting Increment (defaults to 1)
+
+{code}
+def rowKey = "xxx-1"
+def m = astyanaxService.keyspace().prepareMutationBatch()
+m.withRow("Counter1", rowKey)
+    .incrementCounterColumn("ColumnName2")
+    .incrementCounterColumn("ColumnName3")
+m.execute();
+{code}
+
+
+h2. Map Argument
+
+{code}
+def rowKey = "xxx-1"
+def m = m = astyanaxService.keyspace().prepareMutationBatch()
+m.withRow("Counter1", rowKey)
+    .incrementCounterColumns(ColumnName2: 1, ColumnName3: 10, ColumnName4: 100)
+m.execute();
+{code}
+
+

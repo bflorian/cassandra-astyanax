@@ -1,0 +1,43 @@
+h1. Inserting Data
+
+h2. Standard Astyanax
+
+{code}
+def rowKey = "xxx-1"
+def m = astyanaxService.keyspace().prepareMutationBatch()
+
+m.withRow("Standard1", rowKey)
+    .putColumn("ColumnName1", "X", null)
+    .putColumn("ColumnName2", "Y", null)
+    .putColumn("ColumnName3", "Z", null)
+
+m.execute()
+{code}
+
+h2. Allowing Time-to-Live to Default (to infinity)
+
+{code}
+def rowKey = "xxx-1"
+def m = astyanaxService.keyspace().prepareMutationBatch()
+
+m.withRow("Standard1", rowKey)
+    .putColumn("ColumnName1", "X")
+    .putColumn("ColumnName2", "Y")
+    .putColumn("ColumnName3", "Z")
+
+m.execute()
+{code}
+
+h2. From a Map
+
+{code}
+def rowKey = "xxx-1"
+def data = [ColumnName1: "X", ColumnName2: "Y", ColumnName2: "Z"]
+def m = astyanaxService.keyspace().prepareMutationBatch()
+
+m.withRow("Standard1", rowKey)
+    .putColumns(data)
+
+m.execute()
+{code}
+
