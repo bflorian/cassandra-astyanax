@@ -15,3 +15,11 @@ create column family User
 create column family User_CTR
     with comparator = UTF8Type
     and default_validation_class = CounterColumnType;
+
+create column family Standard1
+    with comparator = UTF8Type
+    and default_validation_class = UTF8Type;
+
+create column family Counter1
+    with comparator = UTF8Type
+    and default_validation_class = CounterColumnType;

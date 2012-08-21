@@ -47,7 +47,7 @@ Returns java.util.Map<String, Long>
 
 {code}
 def rowKey = "xxx-1"
-def result = astyanaxService.keyspace().prepareQuery("Standard1")
+def result = astyanaxService.keyspace().prepareQuery("Counter1")
     .getKey(rowKey)
     .withColumnSlice("ColumnName1","ColumnName3","ColumnName5")
     .execute()

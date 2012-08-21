@@ -6,7 +6,7 @@ Returns [com.netflix.astyanax.model.Column|http://netflix.github.com/astyanax/ja
 
 {code}
 def rowKey = "xxx-1"
-Column<String> result = astyanaxService.keyspace().prepareQuery("Standard1")
+def result = astyanaxService.keyspace().prepareQuery("Standard1")
     .getKey(rowKey)
     .getColumn("ColumnName1")
     .execute()
