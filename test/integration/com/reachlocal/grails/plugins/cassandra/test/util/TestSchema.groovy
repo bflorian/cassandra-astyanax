@@ -33,16 +33,23 @@ class TestSchema
 	
     static private createKeyspace(astyanaxService)
 	{
-		new File("test/data/schema.cql").eachLine {line ->
-			println line
-			try {
-				astyanaxService.keyspace().prepareQuery("").withCql(line).execute()
-			}
-			catch (Exception e) {
-				println "${line} -- ${e}"
-			}
+		runCqlScript("test/data/schema.txt")
+	}
+
+	static private runCqlScript(script) {
+		def dsePath = System.getProperty('dsePath')
+		def cassandraCli = "$dsePath/bin/cassandra-cli -h localhost -f"
+
+		def cmd = "$cassandraCli $script"
+		def p = cmd.execute()
+		def stderr = p.err?.text
+		def stdout = p.text
+		if (stderr) {
+			System.err.println stderr
+		} else {
+			System.out.println stdout
 		}
-}
-	
+	}
+
 	static private initialized = false
 }
