@@ -9,13 +9,6 @@ astyanax {
 		standard {
 			seeds = ["localhost:9160"]
 			defaultKeyspace = "AstyanaxTest"
-			//port = 9160
-			//maxConsPerHost = 10
-			//connectionPoolMonitor = new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
-			//discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
-			// retryCount = 3
-			//retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
-			//connectionPoolName = "MyConnectionPool"
 			columnFamilies {
 				AstyanaxTest {
 					LongColumnCF = new ColumnFamily("LongColumnCF", StringSerializer.get(), LongSerializer.get())
