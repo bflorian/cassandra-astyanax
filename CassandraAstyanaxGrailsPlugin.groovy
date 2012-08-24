@@ -19,7 +19,7 @@ import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxDynamicMethods
 class CassandraAstyanaxGrailsPlugin
 {
 	// the plugin version
-	def version = "0.1.0"
+	def version = "0.1.1"
 
 	// the version or versions of Grails the plugin is designed for
 	def grailsVersion = "2.0.0 > *"
@@ -35,39 +35,22 @@ class CassandraAstyanaxGrailsPlugin
 	def author = "Bob Florian"
 	def authorEmail = "bob.florian@reachlocal.com"
 	def title = "Astyanax Cassandra Client"
-	def description = '''This plugin exposes the Astyanax Cassandra client as a Grails service and adds dynamic methods
-to make using it from Groovy more convenient.  It also implements the interface defined by the cassandra-orm plugin that
-provides GORM-like dynamic methods for storing Groovy objects and relationships in Cassandra.
-'''
 
+	def license = 'APACHE'
+	def organization = [name: 'ReachLocal', url: 'http://www.reachlocal.com/']
+	def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPCASSANDRAASTYANAX']
+	def scm = [url: 'https://github.com/bflorian/cassandra-astyanax']
+
+	def description = '''This plugin exposes the Astyanax Cassandra client as a Grails service and adds dynamic methods
+to make using it from Groovy more convenient.  It also implements the interface defined by the cassandra-orm plugin
+[to be released soon] that provides GORM-like dynamic methods for storing Groovy objects and relationships in Cassandra.
+Note that this plugin does not implement the GORM API.
+'''
 	// URL to the plugin's documentation
 	def documentation = "http://grails.org/plugin/cassandra-astyanax"
-
-	def doWithWebDescriptor = { xml ->
-		// TODO Implement additions to web.xml (optional), this event occurs before
-	}
-
-	def doWithSpring = {
-		// TODO Implement runtime spring config (optional)
-	}
 
 	def doWithDynamicMethods = { ctx ->
 		// Dynamic methods to make Astyanax groovier
 		AstyanaxDynamicMethods.addAll()
-	}
-
-	def doWithApplicationContext = { applicationContext ->
-		// TODO Implement post initialization spring config (optional)
-	}
-
-	def onChange = { event ->
-		// TODO Implement code that is executed when any artefact that this plugin is
-		// watching is modified and reloaded. The event contains: event.source,
-		// event.application, event.manager, event.ctx, and event.plugin.
-	}
-
-	def onConfigChange = { event ->
-		// TODO Implement code that is executed when the project configuration changes.
-		// The event is the same as for 'onChange'.
 	}
 }
