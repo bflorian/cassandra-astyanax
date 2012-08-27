@@ -28,8 +28,7 @@ grails.project.dependency.resolution = {
 
 		runtime 'com.github.stephenc.high-scale-lib:high-scale-lib:1.1.1'
 		runtime 'com.github.stephenc.eaio-uuid:uuid:3.2.0'
-		runtime 'com.google.guava:guava:11.0.2'
-		compile ('com.netflix.astyanax:astyanax:1.0.6') {
+		compile ('com.netflix.astyanax:astyanax:1.0.3') {
 			excludes 'slf4j-log4j12', 'junit', 'commons-logging'
 		}
     }
