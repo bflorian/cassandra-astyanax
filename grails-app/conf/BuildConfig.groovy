@@ -39,6 +39,6 @@ grails.project.dependency.resolution = {
 		}
 	}
 }
-grails.release.scm.enabled = false
+
 
 

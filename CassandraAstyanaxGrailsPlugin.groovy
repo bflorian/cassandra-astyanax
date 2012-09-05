@@ -19,10 +19,10 @@ import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxDynamicMethods
 class CassandraAstyanaxGrailsPlugin
 {
 	// the plugin version
-	def version = "0.2.0"
+	def version = "0.2.1"
 
 	// the version or versions of Grails the plugin is designed for
-	def grailsVersion = "2.0.0 > *"
+	def grailsVersion = "1.3.7 > *"
 
 	// the other plugins this plugin depends on
 	def dependsOn = [:]
@@ -35,7 +35,6 @@ class CassandraAstyanaxGrailsPlugin
 	def author = "Bob Florian"
 	def authorEmail = "bob.florian@reachlocal.com"
 	def title = "Astyanax Cassandra Client"
-
 	def license = 'APACHE'
 	def organization = [name: 'ReachLocal', url: 'http://www.reachlocal.com/']
 	def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPCASSANDRAASTYANAX']
