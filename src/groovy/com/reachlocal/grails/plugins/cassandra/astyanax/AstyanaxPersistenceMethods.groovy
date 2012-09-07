@@ -31,6 +31,11 @@ class AstyanaxPersistenceMethods
 		new ColumnFamily(name.toString(), StringSerializer.get(), StringSerializer.get())
 	}
 
+	def columnFamilyName(columnFamily)
+	{
+		columnFamily.name
+	}
+
 	def getRow(Object client, Object columnFamily, Object rowKey, consistencyLevel)
 	{
 		def cols = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey).execute().result
