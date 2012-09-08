@@ -37,9 +37,11 @@ class AstyanaxService implements InitializingBean
 {
 	boolean transactional = false
 
-	def clusters = ConfigurationHolder.config.astyanax.clusters
-	String defaultCluster = ConfigurationHolder.config?.astyanax?.defaultCluster ?: "standard"
-	String defaultKeyspace = ConfigurationHolder.config?.astyanax?.defaultKeySpace ?: "AstyanaxTest"
+	def grailsApplication
+
+	def clusters
+	String defaultCluster
+	String defaultKeyspace
 
 	private clusterMap = [:]
 
@@ -53,6 +55,11 @@ class AstyanaxService implements InitializingBean
 	 */
 	void afterPropertiesSet ()
 	{
+		def config = grailsApplication.config
+		clusters = config.astyanax.clusters
+		defaultCluster = config.astyanax.defaultCluster
+		defaultKeyspace = clusters[defaultCluster].defaultKeyspace
+
 		clusters.each {key, props ->
 			def port = props.port ?: 9160
 			def maxConsPerHost = props.maxConsPerHost ?: 10
