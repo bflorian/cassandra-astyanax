@@ -89,7 +89,42 @@ class AstyanaxPersistenceMethods
 				.getColumnByIndex(0)
 				.longValue
 	}
-	
+
+	def getRowsWithCqlWhereClause(client, columnFamily, clause, max, consistencyLevel)
+	{
+		def query = "SELECT * FROM ${columnFamily.name} WHERE ${clause} LIMIT ${max}"
+
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+				.withCql(query)
+				.execute()
+				.result
+	}
+
+	def getRowsColumnSliceWithCqlWhereClause(client, columnFamily, clause, max, columns, consistencyLevel)
+	{
+		def query = "SELECT ${columns.join(', ')} FROM ${columnFamily.name} WHERE ${clause} LIMIT ${max}"
+
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+				.withCql(query)
+				.execute()
+				.result
+	}
+
+	def countRowsWithCqlWhereClause(client, columnFamily, clause, consistencyLevel)
+	{
+		def query = "SELECT COUNT(*) FROM ${columnFamily.name} WHERE ${clause}"
+
+		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+				.withCql(query)
+				.execute()
+				.result
+				.rows
+				.getRowByIndex(0)
+				.columns
+				.getColumnByIndex(0)
+				.longValue
+	}
+
 	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max, consistencyLevel)
 	{
 		injectConsistencyLevel(client.prepareQuery(columnFamily).getKey(rowKey), consistencyLevel)
