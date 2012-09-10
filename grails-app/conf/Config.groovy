@@ -15,7 +15,15 @@ astyanax {
 				}
 			}
 		}
+		dummy1 {
+			seeds = ["localhost:9160"]
+			defaultKeyspace = "Dummy1Default"
+		}
+		dummy2 {
+			seeds = ["localhost:9160"]
+		}
 	}
+	defaultKeyspace = "OverallDefault"
 	defaultCluster = 'standard'
 }
 

@@ -58,7 +58,7 @@ class AstyanaxService implements InitializingBean
 		def config = grailsApplication.config
 		clusters = config.astyanax.clusters
 		defaultCluster = config.astyanax.defaultCluster
-		defaultKeyspace = clusters[defaultCluster].defaultKeyspace
+		defaultKeyspace = clusters[defaultCluster].defaultKeyspace ?: config.astyanax.defaultKeyspace
 
 		clusters.each {key, props ->
 			def port = props.port ?: 9160
@@ -70,9 +70,15 @@ class AstyanaxService implements InitializingBean
 							.setMaxConnsPerHost(maxConsPerHost)
 							.setSeeds(props.seeds),
 
-					contexts: [:]
+					contexts: [:],
+					defaultKeyspace: props.defaultKeyspace ?: config.astyanax.defaultKeyspace
 			]
 		}
+	}
+
+	def defaultKeyspaceName(cluster)
+	{
+		clusterMap[cluster].defaultKeyspace
 	}
 
 	/**
@@ -82,7 +88,7 @@ class AstyanaxService implements InitializingBean
 	 * @param cluster Optional, name of the Cassandra cluster, defaults to configured defaultCluster
 	 *
 	 */
-	def keyspace(String name=defaultKeyspace, String cluster=defaultCluster)
+	def keyspace(String name=null, String cluster=defaultCluster)
 	{
 		context(name, cluster).entity
 	}
@@ -94,7 +100,7 @@ class AstyanaxService implements InitializingBean
 	 * @param cluster Optional, name of the Cassandra cluster, defaults to configured defaultCluster
 	 *
 	 */
-	def withKeyspace(String keyspace=defaultKeyspace, String cluster=defaultCluster, Closure block) throws Exception
+	def withKeyspace(String keyspace=null, String cluster=defaultCluster, Closure block) throws Exception
 	{
 		block(context(keyspace, cluster).entity)
 	}
@@ -142,9 +148,10 @@ class AstyanaxService implements InitializingBean
 	 */
 	def context(keyspace, cluster)
 	{
-		def context = clusterMap[cluster].contexts[keyspace]
+		def ks = keyspace ?: clusterMap[cluster].defaultKeyspace
+		def context = clusterMap[cluster].contexts[ks]
 		if (!context) {
-			context = newContext(keyspace, cluster)
+			context = newContext(ks, cluster)
 			context.start()
 		}
 		return context

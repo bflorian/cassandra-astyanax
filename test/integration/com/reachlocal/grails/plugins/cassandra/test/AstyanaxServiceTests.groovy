@@ -35,6 +35,36 @@ class AstyanaxServiceTests
 	}
 
 	@Test
+	void testDefaultClusterDefaultKeyspace()
+	{
+		assertEquals "AstyanaxTest", astyanaxService.keyspace().keyspaceName
+	}
+
+	@Test
+	void testClusterDefaultKeyspace1()
+	{
+		assertEquals "Dummy1Default", astyanaxService.keyspace(null, 'dummy1').keyspaceName
+	}
+
+	@Test
+	void testClusterDefaultKeyspace2()
+	{
+		assertEquals "OverallDefault", astyanaxService.keyspace(null, 'dummy2').keyspaceName
+	}
+
+	@Test
+	void testKeyspaceDefaultCluster()
+	{
+		assertEquals "MyKeyspace", astyanaxService.keyspace('MyKeyspace').keyspaceName
+	}
+
+	@Test
+	void testKeyspaceDefaultCluster2()
+	{
+		assertEquals "MyOtherKeyspace", astyanaxService.keyspace('MyOtherKeyspace', 'dummy2').keyspaceName
+	}
+
+	@Test
 	void testRoundTrip()
 	{
 		astyanaxService.withKeyspace() {keyspace ->
