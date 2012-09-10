@@ -16,6 +16,11 @@ astyanax {
             connectionPoolName = "MyConnectionPool"
             defaultReadConsistencyLevel = "CL_ONE"
             defaultWriteConsistencyLevel = "CL_ONE"
+            columnFamilies {
+                AstyanaxTest {
+                    LongPropertyObject = new ColumnFamily("LongPropertyObject", StringSerializer.get(), LongSerializer.get())
+                }
+            }
         }
     }
     defaultCluster = 'standard'
@@ -35,4 +40,5 @@ retryPolicy | no | The retry policy to use.  Defaults to RetryNTimes.  Others va
 connectionPoolName | no | Name used to identify the connection pool.  Defaults to the astyanax.clusters configuration key, i.e. "standard" in this example
 defaultReadConsistencyLevel | no | Default consistency level used when reading from the cluster. This value can be overwritten on the Query operations.
 defaultWriteConsistencyLevel | no | Default consistency level used when reading from the cluster. This value can be overwritten on MutationBatch operation
+columnFamilies | no | Two level Map specifying the serializers to be used for the column row and name, whenever a string is specified as the column family rather than a _com.netflix.astyanax.model.ColumnFamily_ object. The key of the outer map is the key space name and the inner map is the column family name.
 {table}
