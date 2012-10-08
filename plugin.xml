@@ -1,4 +1,4 @@
-<plugin name='cassandra-astyanax' version='0.2.4' grailsVersion='2.0.0 &gt; *'>
+<plugin name='cassandra-astyanax' version='0.2.5' grailsVersion='2.0.0 &gt; *'>
   <author>Bob Florian</author>
   <authorEmail>bob.florian@reachlocal.com</authorEmail>
   <title>Astyanax Cassandra Client</title>
@@ -24,8 +24,8 @@ Note that this plugin does not implement the GORM API.
       <dependency group='com.netflix.astyanax' name='astyanax' version='1.0.3' />
     </compile>
     <runtime>
-      <dependency group='com.github.stephenc.high-scale-lib' name='high-scale-lib' version='1.1.1' />
       <dependency group='com.github.stephenc.eaio-uuid' name='uuid' version='3.2.0' />
+      <dependency group='com.github.stephenc.high-scale-lib' name='high-scale-lib' version='1.1.1' />
     </runtime>
   </dependencies>
   <plugins />
