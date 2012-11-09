@@ -24,6 +24,7 @@ import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.thrift.AbstractThriftMutationBatchImpl
 import com.netflix.astyanax.thrift.AbstractThriftColumnMutationImpl
+import com.netflix.astyanax.thrift.model.ThriftRowsSliceImpl
 
 /**
  * @author: Bob Florian
@@ -74,6 +75,42 @@ class AstyanaxDynamicMethods
 		}
 
 		ThriftRowsListImpl.metaClass.toLongMap = {
+			def result = [:]
+			delegate.iterator().each {r ->
+				def cols = [:]
+				result[r.key] = cols
+				r.columns.each {c ->
+					cols[c.name] = c.longValue
+				}
+			}
+			result
+		}
+
+		ThriftRowsSliceImpl.metaClass.toMap = {
+			def result = [:]
+			delegate.iterator().each {r ->
+				def cols = [:]
+				result[r.key] = cols
+				r.columns.each {c ->
+					cols[c.name] = c
+				}
+			}
+			result
+		}
+
+		ThriftRowsSliceImpl.metaClass.toStringMap = {
+			def result = [:]
+			delegate.iterator().each {r ->
+				def cols = [:]
+				result[r.key] = cols
+				r.columns.each {c ->
+					cols[c.name] = c.stringValue
+				}
+			}
+			result
+		}
+
+		ThriftRowsSliceImpl.metaClass.toLongMap = {
 			def result = [:]
 			delegate.iterator().each {r ->
 				def cols = [:]
