@@ -25,11 +25,12 @@ class CassandraAstyanaxGrailsPlugin
 	def grailsVersion = "2.0.0 > *"
 
 	// the other plugins this plugin depends on
-	def dependsOn = [:]
+	def dependsOn = [cassandraOrm: '0.3.1 > *']
 
 	// resources that are excluded from plugin packaging
 	def pluginExcludes = [
-			"grails-app/views/error.gsp"
+			"grails-app/views/error.gsp",
+			'src/docs/**'
 	]
 
 	def author = "Bob Florian"

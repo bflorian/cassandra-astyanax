@@ -19,11 +19,11 @@ package com.reachlocal.grails.plugins.cassandra.astyanax
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.model.ConsistencyLevel
-
+import com.reachlocal.grails.plugins.cassandra.mapping.PersistenceProvider;
 /**
  * @author: Bob Florian
  */
-class AstyanaxPersistenceMethods
+class AstyanaxPersistenceMethods implements PersistenceProvider
 {
 	// Read operations
 	def columnFamily(String name)
@@ -231,7 +231,12 @@ class AstyanaxPersistenceMethods
 		}
 	}
 
-	void incrementCounterColumn(mutationBatch, columnFamily, rowKey, columnName, value=1)
+	void incrementCounterColumn(mutationBatch, columnFamily, rowKey, columnName)
+	{
+		mutationBatch.withRow(columnFamily, rowKey).incrementCounterColumn(columnName, 1)
+	}
+
+	void incrementCounterColumn(mutationBatch, columnFamily, rowKey, columnName, Long value)
 	{
 		mutationBatch.withRow(columnFamily, rowKey).incrementCounterColumn(columnName, value)
 	}
