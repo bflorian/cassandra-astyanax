@@ -266,7 +266,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		row.key
 	}
 
-	def getColumns(row)
+	Iterable getColumns(row)
 	{
 		row.columns
 	}
