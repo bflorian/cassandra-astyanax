@@ -16,7 +16,7 @@
 
 package com.reachlocal.grails.plugins.cassandra.astyanax
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType
 import com.netflix.astyanax.thrift.ThriftFamilyFactory
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl
@@ -167,12 +167,16 @@ class AstyanaxService implements InitializingBean
 		if (!context) {
 
 			def props = clusters[cluster]
+			//Default the pool type to the same default astyanax uses Round Robin.
+			ConnectionPoolType connectionPoolType = props.connectionPoolType ?: ConnectionPoolType.ROUND_ROBIN
 			def connectionPoolMonitor = props.connectionPoolMonitor ?: new CountingConnectionPoolMonitor()
 			def discoveryType = props.discoveryType ?:  NodeDiscoveryType.NONE
 			def retryCount = props.retryCount ?: 3
 			def retryPolicy = props.retryPolicy ?: new RetryNTimes(retryCount)
 
+
 			def configuration = new AstyanaxConfigurationImpl()
+					.setConnectionPoolType(connectionPoolType)
 					.setDiscoveryType(discoveryType)
 					.setRetryPolicy(retryPolicy)
 
