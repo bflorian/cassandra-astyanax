@@ -7,8 +7,11 @@ import com.netflix.astyanax.serializers.LongSerializer
 astyanax {
 	clusters {
 		standard {
-			seeds = ["localhost:9160"]
+			seeds = "10.0.10.60:9160,10.0.10.61:9160,10.0.10.62:9160"
 			defaultKeyspace = "AstyanaxTest"
+			connectionPoolType = com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE
+			discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE
+
 			columnFamilies {
 				AstyanaxTest {
 					LongColumnCF = new ColumnFamily("LongColumnCF", StringSerializer.get(), LongSerializer.get())
@@ -16,11 +19,15 @@ astyanax {
 			}
 		}
 		dummy1 {
-			seeds = ["localhost:9160"]
+			connectionPoolType = com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE
+			discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE
+			seeds = "10.0.10.60:9160,10.0.10.61:9160,10.0.10.62:9160"
 			defaultKeyspace = "Dummy1Default"
 		}
 		dummy2 {
-			seeds = ["localhost:9160"]
+			connectionPoolType = com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE
+			discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE
+			seeds = "10.0.10.60:9160,10.0.10.61:9160,10.0.10.62:9160"
 		}
 	}
 	defaultKeyspace = "OverallDefault"
