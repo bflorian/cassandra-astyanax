@@ -1,5 +1,7 @@
 drop keyspace AstyanaxTest;
-create keyspace AstyanaxTest;
+CREATE KEYSPACE AstyanaxTest
+with placement_strategy = 'org.apache.cassandra.locator.SimpleStrategy'
+and strategy_options = [{replication_factor:3}];
 use AstyanaxTest;
 
 create column family User

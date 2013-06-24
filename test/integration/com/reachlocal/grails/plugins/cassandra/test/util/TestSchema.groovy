@@ -37,7 +37,7 @@ class TestSchema
 	}
 
 	static private runCqlScript(script) {
-		def dsePath = System.getProperty('dsePath')
+		def dsePath = System.getProperty('dsePath') ?: '/usr/local/dse'
 		def cassandraCli = "$dsePath/bin/cassandra-cli -h localhost -f"
 
 		def cmd = "$cassandraCli $script"
