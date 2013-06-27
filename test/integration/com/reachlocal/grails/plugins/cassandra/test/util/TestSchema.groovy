@@ -33,6 +33,7 @@ class TestSchema
 	
     static private createKeyspace(astyanaxService)
 	{
+		runCqlScript("test/data/schema_drop.txt")
 		runCqlScript("test/data/schema.txt")
 	}
 
