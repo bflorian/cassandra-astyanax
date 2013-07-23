@@ -19,7 +19,7 @@ import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxDynamicMethods
 class CassandraAstyanaxGrailsPlugin
 {
 	// the plugin version
-	def version = "0.3.4-SNAPSHOT"
+	def version = "0.4.0"
 
 	// the version or versions of Grails the plugin is designed for
 	def grailsVersion = "2.0.0 > *"
@@ -43,7 +43,7 @@ class CassandraAstyanaxGrailsPlugin
 
 	def description = '''This plugin exposes the Astyanax Cassandra client as a Grails service and adds dynamic methods
 to make using it from Groovy more convenient.  It also implements the interface defined by the cassandra-orm plugin
-[to be released soon] that provides GORM-like dynamic methods for storing Groovy objects and relationships in Cassandra.
+that provides GORM-like dynamic methods for storing Groovy objects and relationships in Cassandra.
 Note that this plugin does not implement the GORM API.
 '''
 	// URL to the plugin's documentation
