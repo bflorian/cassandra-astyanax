@@ -16,7 +16,9 @@
 
 package com.reachlocal.grails.plugins.cassandra.astyanax
 
+import com.netflix.astyanax.connectionpool.ConnectionPoolConfiguration
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType
+import com.netflix.astyanax.connectionpool.impl.SimpleAuthenticationCredentials
 import com.netflix.astyanax.thrift.ThriftFamilyFactory
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl
@@ -64,14 +66,20 @@ class AstyanaxService implements InitializingBean
 			def port = props.port ?: 9160
 			def maxConsPerHost = props.maxConsPerHost ?: 10
 			def connectionPoolName = props.connectionPoolName ?: key
-			clusterMap[key] = [
-					connectionPoolConfiguration:  new ConnectionPoolConfigurationImpl(connectionPoolName)
-							.setPort(port)
-							.setMaxConnsPerHost(maxConsPerHost)
-							.setSeeds(props.seeds),
 
-					contexts: [:],
-					defaultKeyspace: props.defaultKeyspace ?: config.astyanax.defaultKeyspace
+			ConnectionPoolConfiguration connectionPoolConfiguration =  new ConnectionPoolConfigurationImpl(connectionPoolName)
+				.setPort(port)
+				.setMaxConnsPerHost(maxConsPerHost)
+				.setSeeds(props.seeds)
+
+			if (props.username && props.password) {
+				connectionPoolConfiguration.authenticationCredentials = new SimpleAuthenticationCredentials(props.username, props.password)
+			}
+
+			clusterMap[key] = [
+				connectionPoolConfiguration: connectionPoolConfiguration,
+				contexts: [:],
+				defaultKeyspace: props.defaultKeyspace ?: config.astyanax.defaultKeyspace
 			]
 		}
 	}
