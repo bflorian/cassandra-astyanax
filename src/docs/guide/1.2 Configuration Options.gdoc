@@ -10,10 +10,15 @@ astyanax {
             port = 9160
             maxConsPerHost = 10
             retryCount = 3
-            connectionPoolType = com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.ROUND_ROBIN
+            connectionPoolType = com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE
             connectionPoolMonitor = new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor()
-            discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.NONE
+            discoveryType = com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE
             retryPolicy = new com.netflix.astyanax.retry.RetryNTimes(3)
+            connectTimeout = 2000,
+            socketTimeout = 11000,
+            maxTimeoutWhenExhausted = 2000,
+            maxTimeoutCount = 3,
+            timeoutWindow = 10000,
             connectionPoolName = "MyConnectionPool"
             defaultReadConsistencyLevel = "CL_ONE"
             defaultWriteConsistencyLevel = "CL_ONE"
@@ -35,10 +40,14 @@ defaultKeyspace | no | Name of the keyspace to use if one is not specified in th
 port | no | Port number used for communicating to Cassandra nodes.  Defaults to 9160.
 maxConsPerHost | no | The maximum number of connections to be created for any one node.  Defaults to 10.
 retryCount | no | The number of times Astyanax will retry a call before failing.  Has not effect if the retryPolicy property is set.  Defaults to 3.
-connectionPoolType | no | The connection pool type. Defaults to ROuND_ROBIN. Other values are TOKEN_AWARE, ROUND_ROBIN, and BAG
+connectionPoolType | no | The connection pool type. Defaults to ROUND_ROBIN. Other values are TOKEN_AWARE, ROUND_ROBIN, and BAG
 connectionPoolMonitor | no | The connection pool monitor implementation.  Defaults to new com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor
 discoveryType | no | The method of discovering new nodes.  Defaults to NONE (no discovery).  Other values are RING_DESCRIBE, DISCOVERY_SERVICE, and TOKEN_AWARE
 retryPolicy | no | The retry policy to use.  Defaults to RetryNTimes.  Others values include RunOnce, ConstantBackoff, ExponentialBackoff, BoundedExponentialBackoff, and SleepingRetryPolicy
+connectTimeout | no | Socket connect timeout in milliseconds
+socketTimeout | no | Socket read/write timeout in milliseconds
+maxTimeoutCount | no | Number of allowed timeouts within timeoutWindow milliseconds
+timeoutWindow | no | Shut down a host if it times out too many times within this window
 connectionPoolName | no | Name used to identify the connection pool.  Defaults to the astyanax.clusters configuration key, i.e. "standard" in this example
 defaultReadConsistencyLevel | no | Default consistency level used when reading from the cluster. This value can be overwritten on the Query operations.
 defaultWriteConsistencyLevel | no | Default consistency level used when reading from the cluster. This value can be overwritten on MutationBatch operation

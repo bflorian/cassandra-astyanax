@@ -66,10 +66,20 @@ class AstyanaxService implements InitializingBean
 			def port = props.port ?: 9160
 			def maxConsPerHost = props.maxConsPerHost ?: 10
 			def connectionPoolName = props.connectionPoolName ?: key
+			def connectTimeout = props.connectTimeout ?: 2000
+			def socketTimeout = props.socketTimeout ?: 11000
+			def maxTimeoutWhenExhausted = props.maxTimeoutWhenExhausted ?: 2000
+			def maxTimeoutCount = props.maxTimeoutCount ?: 3
+			def timeoutWindow = props.timeoutWindow ?: 10000
 
 			ConnectionPoolConfiguration connectionPoolConfiguration =  new ConnectionPoolConfigurationImpl(connectionPoolName)
 				.setPort(port)
 				.setMaxConnsPerHost(maxConsPerHost)
+				.setConnectTimeout(connectTimeout)
+				.setSocketTimeout(socketTimeout)
+				.setMaxTimeoutWhenExhausted(maxTimeoutWhenExhausted)
+				.setMaxTimeoutCount(maxTimeoutCount)
+				.setTimeoutWindow(timeoutWindow)
 				.setSeeds(props.seeds)
 
 			if (props.username && props.password) {
@@ -176,9 +186,9 @@ class AstyanaxService implements InitializingBean
 
 			def props = clusters[cluster]
 			//Default the pool type to the same default astyanax uses Round Robin.
-			ConnectionPoolType connectionPoolType = props.connectionPoolType ?: ConnectionPoolType.ROUND_ROBIN
+			ConnectionPoolType connectionPoolType = props.connectionPoolType ?: ConnectionPoolType.TOKEN_AWARE
 			def connectionPoolMonitor = props.connectionPoolMonitor ?: new CountingConnectionPoolMonitor()
-			def discoveryType = props.discoveryType ?:  NodeDiscoveryType.NONE
+			def discoveryType = props.discoveryType ?:  NodeDiscoveryType.RING_DESCRIBE
 			def retryCount = props.retryCount ?: 3
 			def retryPolicy = props.retryPolicy ?: new RetryNTimes(retryCount)
 
