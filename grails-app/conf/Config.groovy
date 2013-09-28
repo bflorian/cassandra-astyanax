@@ -7,7 +7,7 @@ import com.netflix.astyanax.serializers.LongSerializer
 astyanax {
 	clusters {
 		standard {
-			seeds = ["localhost:9160"]
+			seeds = "localhost:9160"
 			defaultKeyspace = "AstyanaxTest"
 			columnFamilies {
 				AstyanaxTest {
@@ -16,11 +16,11 @@ astyanax {
 			}
 		}
 		dummy1 {
-			seeds = ["localhost:9160"]
+			seeds = "localhost:9160"
 			defaultKeyspace = "Dummy1Default"
 		}
 		dummy2 {
-			seeds = ["localhost:9160"]
+			seeds = "localhost:9160"
 		}
 	}
 	defaultKeyspace = "OverallDefault"
