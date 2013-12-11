@@ -9,6 +9,8 @@ astyanax {
 		standard {
 			seeds = "localhost:9160"
 			defaultKeyspace = "AstyanaxTest"
+			cassandraVersion = "1.2"
+			cqlVersion = "3.0.0"
 			columnFamilies {
 				AstyanaxTest {
 					LongColumnCF = new ColumnFamily("LongColumnCF", StringSerializer.get(), LongSerializer.get())

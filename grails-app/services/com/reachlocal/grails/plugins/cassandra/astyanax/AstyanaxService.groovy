@@ -207,6 +207,14 @@ class AstyanaxService implements InitializingBean
 				configuration.setDefaultReadConsistencyLevel(props.defaultReadConsistencyLevel)
 			}
 
+			if (props.cassandraVersion) {
+				configuration.setTargetCassandraVersion(props.cassandraVersion)
+			}
+
+			if (props.cqlVersion) {
+			    configuration.setCqlVersion(props.cqlVersion)
+			}
+
 			context = new AstyanaxContext.Builder()
 					.forCluster(cluster)
 					.forKeyspace(keyspace)
