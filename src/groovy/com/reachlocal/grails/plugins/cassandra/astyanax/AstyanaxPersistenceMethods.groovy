@@ -27,19 +27,35 @@ import com.reachlocal.grails.plugins.cassandra.mapping.PersistenceProvider;
 class AstyanaxPersistenceMethods implements PersistenceProvider
 {
 	// Read operations
-	def objectColumnFamily(String name)
+	def columnTypes(Object client, String name)
 	{
-		new ColumnFamily(name.toString(), UUIDSerializer.get(), StringSerializer.get())
+		def result = [:]
+		def cf = client.describeKeyspace().getColumnFamily(name)
+		cf.columnDefinitionList.each {
+			result[it.name] = dataType(it.validationClass)
+		}
+		result
 	}
 
-	def indexColumnFamily(String name)
+	def columnFamily(Object client, String name)
 	{
-		new ColumnFamily(name.toString(), StringSerializer.get(), UUIDSerializer.get())
+		def cf = client.describeKeyspace().getColumnFamily(name)
+		def rowSerializer = "${dataSerializer(cf.keyValidationClass)}".get()
+		def columnNameSerializer = "${dataSerializer(cf.comparatorType)}".get()
+		new ColumnFamily(name.toString(), rowSerializer, columnNameSerializer)
 	}
 
-	def counterColumnFamily(String name)
-	{
-		new ColumnFamily(name.toString(), StringSerializer.get(), StringSerializer.get())
+	private static dataSerializer(String clazz) {
+		def serializer = "${dataType(clazz)}Serializer"
+		if (serializer == "UTF8Serializer") {
+			serializer = "StringSerializer"
+		}
+		serializer
+	}
+
+	private static dataType(String s) {
+		final pat = ~/.*\.([a-z,A-Z,0-9]+)Type\)?$/
+		pat.matcher(s).replaceAll('$1')
 	}
 
 	def columnFamilyName(columnFamily)
