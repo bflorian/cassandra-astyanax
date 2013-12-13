@@ -136,6 +136,7 @@ class AstyanaxService implements InitializingBean
 	void showColumnFamilies (Collection names, String keyspace, String cluster=defaultCluster, Integer maxRows=50, Integer maxColumns=10, out=System.out) {
 		names.each {String cf ->
 			withKeyspace(keyspace, cluster) {ks ->
+				def cfd = ks.describeKeyspace().getColumnFamily(cf)
 				out.println "${cf}:"
 				ks.prepareQuery(new ColumnFamily(cf, StringSerializer.get(), StringSerializer.get()))
 						.getKeyRange(null,null,'0','0',maxRows)
@@ -143,20 +144,65 @@ class AstyanaxService implements InitializingBean
 						.execute()
 						.result.each{row ->
 
-					out.println "    ${row.key} =>"
+					out.println "    ${rowKey(row,cfd)} =>"
 					row.columns.each {col ->
-						try {
-							out.println "        ${col.name} => '${col.stringValue}'"
-						}
-						catch (Exception ex) {
-							out.println "        ${col.name} => ${col.longValue}"
-						}
+						out.println "        ${columnName(col, cfd)} => ${columnValue(col, cfd)}"
 					}
 				}
 				out.println""
 			}
 		}
 	}
+
+	private rowKey(row, cf) {
+		def vc = cf.keyValidationClass
+		if (dataType(vc) == "UUID") {
+			UUID.fromBytes(row.rawKey.array()).toString()
+		}
+		else {
+			row.key
+		}
+	}
+	private columnName(col, cf) {
+		def ct = cf.comparatorType
+		if (dataType(ct) == "UUID") {
+			UUID.fromBytes(col.rawName.array()).toString()
+		}
+		else {
+			col.name
+		}
+	}
+
+	private columnValue(col, cf) {
+		def cdl = cf.columnDefinitionList
+		def cd = cdl.find{it.name == col.name}
+		def vc = cd?.validationClass ?: cf.defaultValidationClass
+		if (vc) {
+			def type = dataType(vc)
+			switch(type) {
+				case "UUID":
+					return col.UUIDValue
+				case "Long":
+				case "CounterColumn":
+					return col.longValue
+				case "Boolean":
+					return col.booleanValue
+				case "Date":
+					return col.dateValue
+				default:
+					return "'$col.stringValue'"
+			}
+		}
+		else {
+			return "'$col.stringValue'"
+		}
+	}
+
+	private static dataType(String s) {
+		final pat = ~/.*\.([a-z,A-Z,0-9]+)Type\)?$/
+		pat.matcher(s).replaceAll('$1')
+	}
+
 
 	/**
 	 * Finds or creates an Astyanax context for the specified cluster and keyspace

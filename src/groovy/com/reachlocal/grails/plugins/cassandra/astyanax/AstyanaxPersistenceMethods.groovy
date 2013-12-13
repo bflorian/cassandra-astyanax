@@ -40,22 +40,18 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	def columnFamily(Object client, String name)
 	{
 		def cf = client.describeKeyspace().getColumnFamily(name)
-		def rowSerializer = dataSerializer(cf.keyValidationClass).get()
-		def columnNameSerializer = dataSerializer(cf.comparatorType).get()
+		def rowSerializer = dataSerializer(cf?.keyValidationClass)
+		def columnNameSerializer = dataSerializer(cf?.comparatorType)
 		new ColumnFamily(name.toString(), rowSerializer, columnNameSerializer)
 	}
 
 	private static dataSerializer(String clazz) {
-		def serializer = "${dataType(clazz)}Serializer"
-		if (serializer == "UTF8Serializer") {
-			serializer = "StringSerializer"
-		}
-		else if (serializer == "BytesSerializer") {
-			//serializer = "BytesArraySerializer"
-			serializer = "StringSerializer"
-		}
-		Class.forName("com.netflix.astyanax.serializers.$serializer")
+		clazz ? SERIALIZERS[dataType(clazz)] ?: StringSerializer.get() : StringSerializer.get()
 	}
+
+	private static SERIALIZERS = [
+	    UUID : UUIDSerializer.get()
+	]
 
 	private static dataType(String s) {
 		final pat = ~/.*\.([a-z,A-Z,0-9]+)Type\)?$/
@@ -330,6 +326,11 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	def longValue(column)
 	{
 		column.longValue
+	}
+
+	UUID uuidValue(column)
+	{
+		column.UUIDValue
 	}
 
 	private injectConsistencyLevel(query, ConsistencyLevel consistencyLevel)
