@@ -41,7 +41,7 @@ class AstyanaxPersistenceMethodConsistencyLevelTests
 		def key = rowKey("testPrepareMutationBatchString")
 		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace, "CL_ALL")
-			mapping.putColumn(m, columnFamily, key, "name", "Test User 1")
+			mapping.putColumn(m, columnFamily(keyspace), key, "name", "Test User 1")
 			mapping.execute(m)
 		}
 	}
@@ -52,7 +52,7 @@ class AstyanaxPersistenceMethodConsistencyLevelTests
 		def key = rowKey("testPrepareMutationBatchString")
 		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace, ConsistencyLevel.CL_ALL)
-			mapping.putColumn(m, columnFamily, key, "name", "Test User 1")
+			mapping.putColumn(m, columnFamily(keyspace), key, "name", "Test User 1")
 			mapping.execute(m)
 		}
 	}
@@ -65,7 +65,7 @@ class AstyanaxPersistenceMethodConsistencyLevelTests
 		try {
 			astyanaxService.withKeyspace() {keyspace ->
 				def m = mapping.prepareMutationBatch(keyspace, "CL_EVERYTHING")
-				mapping.putColumn(m, columnFamily, key, "name", "Test User 1")
+				mapping.putColumn(m, columnFamily(keyspace), key, "name", "Test User 1")
 				mapping.execute(m)
 			}
 		}
@@ -82,15 +82,15 @@ class AstyanaxPersistenceMethodConsistencyLevelTests
 
 		astyanaxService.withKeyspace() {keyspace ->
 			def m = mapping.prepareMutationBatch(keyspace, null)
-			mapping.putColumn(m, columnFamily, key, "name", "Test User 1")
+			mapping.putColumn(m, columnFamily(keyspace), key, "name", "Test User 1")
 			mapping.execute(m)
 		}
 
 		astyanaxService.withKeyspace() {keyspace ->
-			def col = mapping.getColumn(keyspace, columnFamily, key, "name", "CL_ONE")
+			def col = mapping.getColumn(keyspace, columnFamily(keyspace), key, "name", "CL_ONE")
 			assertEquals "Test User 1", mapping.stringValue(col)
 
-			col = mapping.getColumn(keyspace, columnFamily, key, "name", ConsistencyLevel.CL_ONE)
+			col = mapping.getColumn(keyspace, columnFamily(keyspace), key, "name", ConsistencyLevel.CL_ONE)
 			assertEquals "Test User 1", mapping.stringValue(col)
 		}
 	}
@@ -105,13 +105,13 @@ class AstyanaxPersistenceMethodConsistencyLevelTests
 		astyanaxService.orm
 	}
 
-	private getColumnFamily()
+	private columnFamily(keyspace)
 	{
-		mapping.columnFamily("User")
+		mapping.columnFamily(keyspace, "User")
 	}
 
-	private getCounterColumnFamily()
+	private counterColumnFamily(keyspace)
 	{
-		mapping.columnFamily("User_CTR")
+		mapping.columnFamily(keyspace, "User_CTR")
 	}
 }

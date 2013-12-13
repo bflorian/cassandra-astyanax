@@ -40,8 +40,8 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	def columnFamily(Object client, String name)
 	{
 		def cf = client.describeKeyspace().getColumnFamily(name)
-		def rowSerializer = "${dataSerializer(cf.keyValidationClass)}".get()
-		def columnNameSerializer = "${dataSerializer(cf.comparatorType)}".get()
+		def rowSerializer = dataSerializer(cf.keyValidationClass).get()
+		def columnNameSerializer = dataSerializer(cf.comparatorType).get()
 		new ColumnFamily(name.toString(), rowSerializer, columnNameSerializer)
 	}
 
@@ -50,7 +50,11 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		if (serializer == "UTF8Serializer") {
 			serializer = "StringSerializer"
 		}
-		serializer
+		else if (serializer == "BytesSerializer") {
+			//serializer = "BytesArraySerializer"
+			serializer = "StringSerializer"
+		}
+		Class.forName("com.netflix.astyanax.serializers.$serializer")
 	}
 
 	private static dataType(String s) {
