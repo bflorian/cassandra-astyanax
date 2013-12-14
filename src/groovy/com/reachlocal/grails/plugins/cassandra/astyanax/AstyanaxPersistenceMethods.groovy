@@ -19,6 +19,7 @@ package com.reachlocal.grails.plugins.cassandra.astyanax
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.model.ConsistencyLevel
+import com.netflix.astyanax.serializers.TimeUUIDSerializer
 import com.netflix.astyanax.serializers.UUIDSerializer
 import com.reachlocal.grails.plugins.cassandra.mapping.PersistenceProvider;
 /**
@@ -50,7 +51,8 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	}
 
 	private static SERIALIZERS = [
-	    UUID : UUIDSerializer.get()
+	    UUID : UUIDSerializer.get(),
+		TimeUUID : TimeUUIDSerializer.get()
 	]
 
 	private static dataType(String s) {

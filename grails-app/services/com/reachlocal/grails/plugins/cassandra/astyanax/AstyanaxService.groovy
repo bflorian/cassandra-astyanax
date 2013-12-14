@@ -156,7 +156,7 @@ class AstyanaxService implements InitializingBean
 
 	private rowKey(row, cf) {
 		def vc = cf.keyValidationClass
-		if (dataType(vc) == "UUID") {
+		if (dataType(vc) in ["UUID","TimeUUID"]) {
 			UUID.fromBytes(row.rawKey.array()).toString()
 		}
 		else {
@@ -165,7 +165,7 @@ class AstyanaxService implements InitializingBean
 	}
 	private columnName(col, cf) {
 		def ct = cf.comparatorType
-		if (dataType(ct) == "UUID") {
+		if (dataType(ct) in ["UUID","TimeUUID"]) {
 			UUID.fromBytes(col.rawName.array()).toString()
 		}
 		else {
