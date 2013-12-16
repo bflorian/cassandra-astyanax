@@ -8,3 +8,4 @@ web-app/css/
 web-app/images/
 web-app/js/
 cobertura.ser
+grails-cassandra-astyanax-*.zip
