@@ -181,6 +181,7 @@ class AstyanaxService implements InitializingBean
 			def type = dataType(vc)
 			switch(type) {
 				case "UUID":
+				case "TimeUUID":
 					return col.UUIDValue
 				case "Long":
 				case "CounterColumn":

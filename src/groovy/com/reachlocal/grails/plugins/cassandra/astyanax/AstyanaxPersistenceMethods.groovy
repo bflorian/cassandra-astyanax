@@ -60,6 +60,15 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		pat.matcher(s).replaceAll('$1')
 	}
 
+	def indexIsTimeUuid(indexColumnFamily) {
+		indexColumnFamily.columnSerializer instanceof TimeUUIDSerializer
+	}
+
+	def indexIsReversed(Object client, String indexColumnFamilyName) {
+		def cf = client.describeKeyspace().getColumnFamily(indexColumnFamilyName)
+		return cf?.comparatorType?.startsWith("org.apache.cassandra.db.marshal.ReversedType")
+	}
+
 	def columnFamilyName(columnFamily)
 	{
 		columnFamily.name
