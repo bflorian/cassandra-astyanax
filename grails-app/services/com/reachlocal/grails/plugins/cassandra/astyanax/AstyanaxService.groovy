@@ -51,7 +51,7 @@ class AstyanaxService implements InitializingBean
 	/**
 	 * Provides persistence methods for cassandra-orm plugin
 	 */
-	def orm = new AstyanaxPersistenceMethods()
+	def orm
 
 	/**
 	 * Initializes all configured clusters
@@ -59,6 +59,7 @@ class AstyanaxService implements InitializingBean
 	void afterPropertiesSet ()
 	{
 		def config = grailsApplication.config
+		orm = new AstyanaxPersistenceMethods(log: log)
 		clusters = config.astyanax.clusters
 		defaultCluster = config.astyanax.defaultCluster
 		defaultKeyspace = clusters[defaultCluster].defaultKeyspace ?: config.astyanax.defaultKeyspace

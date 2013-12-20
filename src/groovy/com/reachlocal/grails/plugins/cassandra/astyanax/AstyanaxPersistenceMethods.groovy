@@ -27,23 +27,34 @@ import com.reachlocal.grails.plugins.cassandra.mapping.PersistenceProvider;
  */
 class AstyanaxPersistenceMethods implements PersistenceProvider
 {
+	def log
+
+	private logTime(long t0, name) {
+		log.trace "Astyanax.$name ${System.currentTimeMillis() - t0} msec"
+	}
+
 	// Read operations
 	def columnTypes(Object client, String name)
 	{
+		long t0 = System.currentTimeMillis()
 		def result = [:]
 		def cf = client.describeKeyspace().getColumnFamily(name)
 		cf.columnDefinitionList.each {
 			result[it.name] = dataType(it.validationClass)
 		}
+		logTime(t0, "columnTypes")
 		result
 	}
 
 	def columnFamily(Object client, String name)
 	{
+		long t0 = System.currentTimeMillis()
 		def cf = client.describeKeyspace().getColumnFamily(name)
 		def rowSerializer = dataSerializer(cf?.keyValidationClass)
 		def columnNameSerializer = dataSerializer(cf?.comparatorType)
-		new ColumnFamily(name.toString(), rowSerializer, columnNameSerializer)
+		def result = new ColumnFamily(name.toString(), rowSerializer, columnNameSerializer)
+		logTime(t0, "columnFamily")
+		result
 	}
 
 	private static dataSerializer(String clazz) {
@@ -65,8 +76,10 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	}
 
 	def indexIsReversed(Object client, String indexColumnFamilyName) {
+		long t0 = System.currentTimeMillis()
 		def cf = client.describeKeyspace().getColumnFamily(indexColumnFamilyName)
-		return cf?.comparatorType?.startsWith("org.apache.cassandra.db.marshal.ReversedType")
+		logTime(t0, "indexIsReversed")
+		cf?.comparatorType?.startsWith("org.apache.cassandra.db.marshal.ReversedType")
 	}
 
 	def columnFamilyName(columnFamily)
@@ -76,48 +89,64 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 
 	def getRow(Object client, Object columnFamily, Object rowKey, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def cols = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey).execute().result
-		cols.isEmpty() ? null : cols
+		def result = cols.isEmpty() ? null : cols
+		logTime(t0, "getRow")
+		result
 	}
 
 	def getRows(Object client, Object columnFamily, Collection rowKeys, consistencyLevel)
 	{
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).execute().result
+		long t0 = System.currentTimeMillis()
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).execute().result
+		logTime(t0, "getRows")
+		result
 	}
 
 	def getRowsColumnSlice(Object client, Object columnFamily, Collection rowKeys, Collection columnNames, consistencyLevel)
 	{
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
+		long t0 = System.currentTimeMillis()
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
+		logTime(t0, "getRowsColumnSlice")
+		result
 	}
 
 	def getRowsColumnRange(Object client, Object columnFamily, Collection rowKeys, Object start, Object finish, Boolean reversed, Integer max, consistencyLevel)
 	{
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys)
+		long t0 = System.currentTimeMillis()
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys)
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
+		logTime(t0, "getRowsColumnRange")
+		result
 	}
 
 	def getRowsWithEqualityIndex(client, columnFamily, properties, max, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def exp = properties.collect {name, value ->
 			columnFamily.newIndexClause().whereColumn(name).equals().value(value)
 		}
 
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.searchWithIndex()
 				.setRowLimit(max)
 				.addPreparedExpressions(exp)
 				.execute()
 				.result
+		logTime(t0, "getRowsWithEqualityIndex")
+		result
 	}
 
 	def countRowsWithEqualityIndex(client, columnFamily, properties, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def clause = properties.collect {name, value -> "${name} = '${value}'"}.join(" AND ")
 		def query = "SELECT COUNT(*) FROM ${columnFamily.name} WHERE ${clause}"
 
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.withCql(query)
 				.execute()
 				.result
@@ -126,33 +155,42 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.columns
 				.getColumnByIndex(0)
 				.longValue
+		logTime(t0, "countRowsWithEqualityIndex")
+		result
 	}
 
 	def getRowsWithCqlWhereClause(client, columnFamily, clause, max, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def query = "SELECT * FROM ${columnFamily.name} WHERE ${clause} LIMIT ${max}"
 
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.withCql(query)
 				.execute()
 				.result
+		logTime(t0, "getRowsWithCqlWhereClause")
+		result
 	}
 
 	def getRowsColumnSliceWithCqlWhereClause(client, columnFamily, clause, max, columns, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def query = "SELECT ${columns.join(', ')} FROM ${columnFamily.name} WHERE ${clause} LIMIT ${max}"
 
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.withCql(query)
 				.execute()
 				.result
+		logTime(t0, "getRowsColumnSliceWithCqlWhereClause")
+		result
 	}
 
 	def countRowsWithCqlWhereClause(client, columnFamily, clause, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def query = "SELECT COUNT(*) FROM ${columnFamily.name} WHERE ${clause}"
 
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel)
 				.withCql(query)
 				.execute()
 				.result
@@ -161,41 +199,55 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.columns
 				.getColumnByIndex(0)
 				.longValue
+		logTime(t0, "countRowsWithCqlWhereClause")
+		result
 	}
 
 	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max, consistencyLevel)
 	{
-		injectConsistencyLevel(client.prepareQuery(columnFamily).getKey(rowKey), consistencyLevel)
+		long t0 = System.currentTimeMillis()
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily).getKey(rowKey), consistencyLevel)
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
+		logTime(t0, "getColumnRange")
+		result
 	}
 
 	def countColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, consistencyLevel)
 	{
+		long t0 = System.currentTimeMillis()
 		def row = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 		if (start || finish) {
 			row = row.withColumnRange(start, finish, false, Integer.MAX_VALUE)
 		}
-		row.getCount()
+		def result = row.getCount()
 				.execute()
 				.result
+		logTime(t0, "countColumnRange")
+		result
 	}
 
 	def getColumnSlice(Object client, Object columnFamily, Object rowKey, Collection columnNames, consistencyLevel)
 	{
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
+		long t0 = System.currentTimeMillis()
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 				.withColumnSlice(columnNames)
 				.execute()
 				.result
+		logTime(t0, "getColumnSlice")
+		result
 	}
 
 	def getColumn(Object client, Object columnFamily, Object rowKey, Object columnName, consistencyLevel)
 	{
-		injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
+		long t0 = System.currentTimeMillis()
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 				.getColumn(columnName)
 				.execute()
 				.result
+		logTime(t0, "getColumn")
+		result
 	}
 
 	def prepareMutationBatch(client, ConsistencyLevel consistencyLevel)
@@ -291,7 +343,10 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 
 	def execute(mutationBatch)
 	{
-		mutationBatch.execute()
+		long t0 = System.currentTimeMillis()
+		def result = mutationBatch.execute()
+		logTime(t0, "execute")
+		result
 	}
 
 	def getRow(rows, key)
