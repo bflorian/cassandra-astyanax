@@ -19,7 +19,7 @@ import com.reachlocal.grails.plugins.cassandra.astyanax.AstyanaxDynamicMethods
 class CassandraAstyanaxGrailsPlugin
 {
 	// the plugin version
-	def version = "1.0.4"
+	def version = "1.0.5-SNAPSHOT"
 
 	// the version or versions of Grails the plugin is designed for
 	def grailsVersion = "2.0.0 > *"
