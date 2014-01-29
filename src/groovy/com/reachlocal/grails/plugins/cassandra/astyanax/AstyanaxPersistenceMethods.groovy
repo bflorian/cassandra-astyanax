@@ -75,6 +75,10 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		indexColumnFamily.columnSerializer instanceof TimeUUIDSerializer
 	}
 
+	def keyIsTimeUuid(columnFamily) {
+		columnFamily.keySerializer instanceof TimeUUIDSerializer
+	}
+
 	def indexIsReversed(Object client, String indexColumnFamilyName) {
 		long t0 = System.currentTimeMillis()
 		def cf = client.describeKeyspace().getColumnFamily(indexColumnFamilyName)
