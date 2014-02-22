@@ -210,7 +210,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	def getColumnRange(Object client, Object columnFamily, Object rowKey, Object start, Object finish, Boolean reversed, Integer max, consistencyLevel)
 	{
 		long t0 = System.currentTimeMillis()
-		def result = injectConsistencyLevel(client.prepareQuery(columnFamily).getKey(rowKey), consistencyLevel)
+		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey)
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
