@@ -46,6 +46,15 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		result
 	}
 
+	def keyType(Object client, String name)
+	{
+		long t0 = System.currentTimeMillis()
+		def cf = client.describeKeyspace().getColumnFamily(name)
+		def result = dataType(cf.keyValidationClass)
+		logTime(t0, "keyType")
+		result
+	}
+
 	def columnFamily(Object client, String name)
 	{
 		long t0 = System.currentTimeMillis()
