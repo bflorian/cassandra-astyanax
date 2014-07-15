@@ -102,7 +102,7 @@ class AstyanaxService implements InitializingBean
 	}
 
 	/**
-	 * Returns a keyspace entity
+	 * Returns a keyspace client
 	 *
 	 * @param name Optional, ame of the keyspace, defaults to configured defaultKeyspace
 	 * @param cluster Optional, name of the Cassandra cluster, defaults to configured defaultCluster
@@ -110,7 +110,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	def keyspace(String name=null, String cluster=defaultCluster)
 	{
-		context(name, cluster).entity
+		context(name, cluster).getClient()
 	}
 
 	/**
@@ -122,7 +122,7 @@ class AstyanaxService implements InitializingBean
 	 */
 	def withKeyspace(String keyspace=null, String cluster=defaultCluster, Closure block) throws Exception
 	{
-		block(context(keyspace, cluster).entity)
+		block(context(keyspace, cluster).getClient())
 	}
 
 	/**
