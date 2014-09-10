@@ -80,11 +80,23 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		pat.matcher(s).replaceAll('$1')
 	}
 
-	def indexIsTimeUuid(indexColumnFamily) {
+	static Boolean isUuidType(type) {
+		type == "UUID"
+	}
+
+	static Boolean isTimeUuidType(type) {
+		type == "TimeUUID"
+	}
+
+	static Boolean isAnyUuidType(type) {
+		["UUID","TimeUUID"].contains(type)
+	}
+
+	static indexIsTimeUuid(indexColumnFamily) {
 		indexColumnFamily.columnSerializer instanceof TimeUUIDSerializer
 	}
 
-	def keyIsTimeUuid(columnFamily) {
+	static keyIsTimeUuid(columnFamily) {
 		columnFamily.keySerializer instanceof TimeUUIDSerializer
 	}
 
