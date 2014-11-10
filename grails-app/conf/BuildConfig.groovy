@@ -20,13 +20,13 @@ grails.project.dependency.resolution = {
 		runtime 'com.github.stephenc.high-scale-lib:high-scale-lib:1.1.1'
 		runtime 'com.github.stephenc.eaio-uuid:uuid:3.2.0'
 
-		compile('com.netflix.astyanax:astyanax-core:1.56.49') {
+		compile('com.netflix.astyanax:astyanax-core:2.0.1') {
 			excludes 'slf4j-log4j12', 'junit', 'commons-logging'
 		}
-		compile('com.netflix.astyanax:astyanax-thrift:1.56.49') {
+		compile('com.netflix.astyanax:astyanax-thrift:2.0.1') {
 			excludes 'slf4j-log4j12', 'junit', 'commons-logging'
 		}
-		compile('com.netflix.astyanax:astyanax-cassandra:1.56.49') {
+		compile('com.netflix.astyanax:astyanax-cassandra:2.0.1') {
 			excludes 'slf4j-log4j12', 'junit', 'commons-logging'
 		}
 
