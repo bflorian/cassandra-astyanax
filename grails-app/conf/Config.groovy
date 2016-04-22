@@ -62,3 +62,5 @@ astyanax.clusters.standard.connectTimeout = 3000
 astyanax.clusters.standard.socketTimeout = 25000
 astyanax.clusters.standard.retryCount = 5
 
+astyanax.slowQueryThreshold = 0
+
