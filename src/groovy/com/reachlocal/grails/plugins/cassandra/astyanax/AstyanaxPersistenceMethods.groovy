@@ -16,21 +16,58 @@
 
 package com.reachlocal.grails.plugins.cassandra.astyanax
 
+import com.netflix.astyanax.MutationBatch
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.serializers.StringSerializer
 import com.netflix.astyanax.model.ConsistencyLevel
 import com.netflix.astyanax.serializers.TimeUUIDSerializer
 import com.netflix.astyanax.serializers.UUIDSerializer
-import com.reachlocal.grails.plugins.cassandra.mapping.PersistenceProvider;
+import com.reachlocal.grails.plugins.cassandra.mapping.PersistenceProvider
+import com.reachlocal.grails.plugins.cassandra.utils.NestedHashMap
+import grails.util.Holders;
 /**
  * @author: Bob Florian
  */
 class AstyanaxPersistenceMethods implements PersistenceProvider
 {
 	def log
+	def slowQueryThreshold = Holders.config.astyanax.slowQueryThreshold
 
 	private logTime(long t0, name) {
 		log.trace "Astyanax.$name ${System.currentTimeMillis() - t0} msec"
+	}
+
+	private static String trimLoggedList(list) {
+		if (list?.size() > 3) {
+			list[0..1].toString() + "... ${list.size() - 2} more"
+		}
+		else {
+			list?.toString()
+		}
+	}
+
+	private static Map loggedRows(mutationBatch) {
+		NestedHashMap map = new NestedHashMap()
+		mutationBatch.rowKeys.each {n, value ->
+			value.each {cf ->
+				map.increment(cf, 1)
+			}
+		}
+		map
+	}
+
+	private logQuery(long t0, Object consistencyLevel, ColumnFamily columnFamily, String operation, Map params) {
+		def elapsed = System.currentTimeMillis() - t0
+		if (elapsed >= slowQueryThreshold) {
+			log.info "ORM $operation, time: $elapsed, columnFamily: $columnFamily.name, consistencyLevel: $consistencyLevel, params: $params"
+		}
+	}
+
+	private logMutationBatch(long t0, mutationBatch, params) {
+		def elapsed = System.currentTimeMillis() - t0
+		if (elapsed >= slowQueryThreshold) {
+			log.info "ORM executeMutationBatch, time: $elapsed, consistencyLevel: $mutationBatch.consistencyLevel, ${params}"
+		}
 	}
 
 	// Read operations
@@ -117,7 +154,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		long t0 = System.currentTimeMillis()
 		def cols = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKey(rowKey).execute().result
 		def result = cols.isEmpty() ? null : cols
-		logTime(t0, "getRow")
+		logQuery(t0, consistencyLevel, columnFamily, "getRow", [rowKey: rowKey])
 		result
 	}
 
@@ -125,7 +162,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	{
 		long t0 = System.currentTimeMillis()
 		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).execute().result
-		logTime(t0, "getRows")
+		logQuery(t0, consistencyLevel, columnFamily, "getRows", [rowKeys: trimLoggedList(rowKeys)])
 		result
 	}
 
@@ -133,7 +170,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	{
 		long t0 = System.currentTimeMillis()
 		def result = injectConsistencyLevel(client.prepareQuery(columnFamily), consistencyLevel).getKeySlice(rowKeys).withColumnSlice(columnNames).execute().result
-		logTime(t0, "getRowsColumnSlice")
+		logQuery(t0, consistencyLevel, columnFamily, "getRowsColumnSlice", [rowKeys: trimLoggedList(rowKeys), columnNames: trimLoggedList(columnNames)])
 		result
 	}
 
@@ -144,7 +181,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
-		logTime(t0, "getRowsColumnRange")
+		logQuery(t0, consistencyLevel, columnFamily, "getRowsColumnRange", [rowKeys: trimLoggedList(rowKeys), columnRange: [start: start?.toString(), finish: finish?.toString()]])
 		result
 	}
 
@@ -161,7 +198,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.addPreparedExpressions(exp)
 				.execute()
 				.result
-		logTime(t0, "getRowsWithEqualityIndex")
+		logQuery(t0, consistencyLevel, columnFamily, "searchWithIndex", [properties: properties, max: max])
 		result
 	}
 
@@ -180,7 +217,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.columns
 				.getColumnByIndex(0)
 				.longValue
-		logTime(t0, "countRowsWithEqualityIndex")
+		logQuery(t0, consistencyLevel, columnFamily, "withCql", [query: query])
 		result
 	}
 
@@ -193,7 +230,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.withCql(query)
 				.execute()
 				.result
-		logTime(t0, "getRowsWithCqlWhereClause")
+		logQuery(t0, consistencyLevel, columnFamily, "withCql", [query: query])
 		result
 	}
 
@@ -206,7 +243,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.withCql(query)
 				.execute()
 				.result
-		logTime(t0, "getRowsColumnSliceWithCqlWhereClause")
+		logQuery(t0, consistencyLevel, columnFamily, "withCql", [query: query])
 		result
 	}
 
@@ -224,7 +261,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.columns
 				.getColumnByIndex(0)
 				.longValue
-		logTime(t0, "countRowsWithCqlWhereClause")
+		logQuery(t0, consistencyLevel, columnFamily, "withCql", [query: query])
 		result
 	}
 
@@ -235,7 +272,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.withColumnRange(start, finish, reversed, max)
 				.execute()
 				.result
-		logTime(t0, "getColumnRange")
+		logQuery(t0, consistencyLevel, columnFamily, "getColumnRange", [rowKey: rowKey, start: start?.toString(), finish: finish?.toString()])
 		result
 	}
 
@@ -249,7 +286,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 		def result = row.getCount()
 				.execute()
 				.result
-		logTime(t0, "countColumnRange")
+		logQuery(t0, consistencyLevel, columnFamily, "countColumnRange", [rowKey: rowKey, start: start?.toString(), finish: finish?.toString()])
 		result
 	}
 
@@ -260,7 +297,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.withColumnSlice(columnNames)
 				.execute()
 				.result
-		logTime(t0, "getColumnSlice")
+		logQuery(t0, consistencyLevel, columnFamily, "getColumnSlice", [rowKey: rowKey, columnNames: trimLoggedList(columnNames)])
 		result
 	}
 
@@ -271,7 +308,7 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 				.getColumn(columnName)
 				.execute()
 				.result
-		logTime(t0, "getColumn")
+		logQuery(t0, consistencyLevel, columnFamily, "getColumn", [rowKey: rowKey, columnName: columnName])
 		result
 	}
 
@@ -369,8 +406,9 @@ class AstyanaxPersistenceMethods implements PersistenceProvider
 	def execute(mutationBatch)
 	{
 		long t0 = System.currentTimeMillis()
+		def rows = loggedRows(mutationBatch)
 		def result = mutationBatch.execute()
-		logTime(t0, "execute")
+		logMutationBatch(t0, mutationBatch, [rows: rows])
 		result
 	}
 
